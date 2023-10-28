@@ -26,9 +26,7 @@ body[data-theme='dark'] {
 body {
   background-color: var(--color-background);
   color: var(--color-text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -39,3 +37,159 @@ code {
   color: var(--color-text);
 }
 
+.message-container {
+  height: 400px;  /* Set to whatever height you want */
+  overflow-y: auto;
+}
+
+.message-container > div {
+  text-align: left;
+  padding: 16px;
+  font-size: 18px; /* Set font size */
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  /* Any other styles you want to apply to each message div */
+}
+
+.message-container > div > span {
+  /* Styles specific to the span inside each message div, if needed */
+}
+
+@keyframes icyEffect {
+  0% { background-color: rgba(173, 216, 230, 0.1); }
+  50% { background-color: rgba(173, 216, 230, 0.5); }
+  100% { background-color: rgba(173, 216, 230, 0.1); }
+}
+
+.icy-theme {
+  animation: icyEffect 2s infinite linear;
+  background-image: url('icons/icebolt.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: right center;
+}
+
+
+
+
+.cell {
+  flex-grow: 1;
+  flex-basis: 0;
+  flex: 1;
+  border: 1px solid grey;
+   position: relative;
+}
+
+.cell.empty {
+  background-color: white;
+}
+
+.cell.room {
+  background-color: green;
+}
+
+.cell.current {
+  background-color: red;
+}
+
+.cell.room.new-area {
+  background-color: cyan;
+}
+
+
+.cell.right-wall {
+  border-right: 4px solid black;
+}
+
+.cell.left-wall {
+  border-left: 4px solid black;
+}
+
+.cell.top-wall {
+  border-top: 4px solid black;
+}
+
+.cell.bottom-wall {
+  border-bottom: 4px solid black;
+}
+
+
+.row {
+  display: flex;
+  flex: 1;
+}
+
+
+.map {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.miniMap {
+  width: 400px; /* or whatever width you'd like */
+  height: 400px; /* or whatever height you'd like */
+  display: flex;
+  flex-direction: column;
+}
+
+.new-area {
+  background-color: cyan/* Your desired color for new areas */;
+}
+
+.miniMap .row {
+  display: flex;
+}
+
+.up-arrow, .down-arrow {
+  position: absolute;
+  font-size: 14px;
+}
+
+.up-arrow {
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.down-arrow {
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* For Login Page */
+
+.login-link {
+  color: lightblue;
+}
+
+/* Add your previous styles above */
+
+/* New styles */
+.login-container {
+  width: 100vw;
+  height: 100vh;
+  background-image: url('/images/splash.png');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.paper-style {
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  text-align: center;
+  color: white;
+}
+
+.text-white {
+  color: white !important;
+}
+
+.link-light {
+  color: lightblue !important;
+}

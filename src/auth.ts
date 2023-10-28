@@ -30,10 +30,31 @@ export const authProvider: AuthProvider = {
       }
     }
   },
+
+  // async signup(username: string, password: string) {
+  //   const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:8080'; // default to localhost
+  //   try {
+  //     const response = await fetch(`${serverUrl}/signup`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         username: username,
+  //         password: password,
+  //       }),
+  //     });
+  //     // ...rest of the code
+  //   } catch (error) {
+  //     console.error("Error during fetch:", error);
+  //   }
+  // }
+
   async signup(username: string, password: string) {
     //await new Promise((r) => setTimeout(r, 500)); // fake delay
+    //const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:8080';
     try {
-      const response = await fetch('http://localhost:8080/signup', {
+      const response = await fetch(`/api/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -66,7 +87,7 @@ export const authProvider: AuthProvider = {
   async signin(username: string, password: string) {
     //await new Promise((r) => setTimeout(r, 500)); // fake delay
     try {
-      const response = await fetch('http://localhost:8080/login', {
+      const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

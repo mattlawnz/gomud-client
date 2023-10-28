@@ -1,0 +1,68 @@
+import { useEffect, useState } from 'react';
+import useWebSocket from 'react-use-websocket';
+
+import { getSocketURL } from '../config';
+import type { ChatItemType, ChatMonsterType, ChatTextServerResponse, ServerResponse } from '../types';
+
+export const ChatWindow = () => {
+  const [chatMessages, setChatMessages] = useState<Array<ServerResponse>>([]);
+  const [selectedDetail, setSelectedDetail] = useState<null | unknown>(null);
+
+  const { lastJsonMessage } = useWebSocket(getSocketURL(), {
+    share: true,
+    filter(message: WebSocketEventMap['message']) {
+      const serverResponse = JSON.parse(message.data) as ServerResponse;
+      return ['chatText', 'chatItem', 'chatMonster'].includes(serverResponse.type);
+    },
+  });
+
+  useEffect(() => {
+    if (lastJsonMessage) {
+      setChatMessages((prevMessages) => [...prevMessages, lastJsonMessage as ServerResponse]);
+    }
+  }, [lastJsonMessage]);
+
+  const handleDetailClick = (detail: unknown) => {
+    setSelectedDetail(detail);
+  };
+
+  return (
+    <div>
+      <h1>Chat Window</h1>
+      <div>
+        {chatMessages.map((message, index) => {
+          const key = `msg-${index}`;
+          try {
+            if (message.type === 'chatText') {
+              const chatTextData = (message as unknown as ChatTextServerResponse).text;
+              return <p key={key}>{`${chatTextData.from}: ${chatTextData.text}`}</p>;
+            } else if (message.type === 'chatMonster') {
+              const monsterData = (message as unknown as ChatMonsterType).monster;
+              return (
+                <p key={key}>
+                  <strong>{`${monsterData.from}: `}</strong>
+                  <button onClick={() => handleDetailClick(monsterData)}>Monster Encounter</button>
+                </p>
+              );
+            } else if (message.type === 'chatItem') {
+              const itemData = (message as unknown as ChatItemType).item;
+              return (
+                <p key={key}>
+                  <strong>{`${itemData.from || 'Unknown'}: `}</strong>
+                  <button onClick={() => handleDetailClick(itemData)}>Found an Item</button>
+                </p>
+              );
+            } else {
+              console.log(`Unexpected message type or missing data: ${JSON.stringify(message)}`);
+              return null;
+            }
+          } catch (error) {
+            console.error('Parsing or handling failed: ', error);
+            return null;
+          }
+        })}
+      </div>
+      {selectedDetail && <div>{JSON.stringify(selectedDetail, null, 2)}</div>}
+    </div>
+  );
+};

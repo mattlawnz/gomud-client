@@ -1,0 +1,106 @@
+import { Box, Grid, Typography } from '@mui/material';
+
+import type { RoomType } from '../types';
+import { Characters } from './CharacterList';
+import { Consumables } from './Consumables';
+import { FightsList } from './Fights';
+import { ItemList } from './ItemList';
+import { MonsterList } from './MonsterList';
+import { QuestList } from './QuestList';
+
+export type RoomComponentProps = {
+  roomData: RoomType;
+  sendCommand: (_command: string) => void;
+};
+
+export const RoomComponent = ({ roomData }: RoomComponentProps) => {
+  if (!roomData || !roomData.type) {
+    return (
+      <Box>
+        <Typography id="modal-modal-title" variant="h6" component="h2">
+          No room data available
+        </Typography>
+      </Box>
+    );
+  }
+
+  //log the icond field to console
+  // console.log(roomData.icon);
+  // Define the background image URL using the roomData's icon field
+  const backgroundImage = roomData.icon ? `url(images/${roomData.icon})` : 'none';
+
+  return (
+    <Box
+      sx={{
+        position: 'relative',
+        padding: '20px',
+        width: '100%',
+        // Apply background image style here
+        backgroundImage: backgroundImage,
+        backgroundSize: 'cover', // You can adjust this as needed
+        backgroundPosition: 'center center', // Center the image vertically
+        // Add an overlay for better text readability
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.4)', // Adjust opacity as needed
+        },
+      }}
+    >
+      <Typography
+        id="room-title"
+        variant="h6"
+        component="h4"
+        align="left"
+        color="white" // Set text color to white for readability
+      >
+        {roomData.title}
+      </Typography>
+      <Typography
+        id="room-description"
+        variant="body1"
+        component="p"
+        align="left"
+        color="white" // Set text color to white for readability
+      >
+        {roomData.description}
+      </Typography>
+
+      <Grid container spacing={3}>
+        <Grid item xs={5}>
+          {/* Monsters on the left */}
+          <MonsterList />
+          <Characters />
+          <FightsList />
+          <QuestList />
+        </Grid>
+        <Grid item xs={5}>
+          {/* Items and Consumables on the right */}
+          <ItemList />
+          <Consumables />
+        </Grid>
+      </Grid>
+    </Box>
+  );
+};
+
+export const RoomView = () => {
+  const roomData = useRoomData();
+  const { sendJsonMessage } = useWebSocket(getSocketURL(), {
+    share: true,
+  });
+
+  const sendCommand = (commandValue: string) => {
+    const messageForServer: ClientCommand = {
+      type: 'command',
+      command: commandValue,
+    };
+    sendJsonMessage(messageForServer);
+  };
+
+  return <RoomComponent roomData={roomData} sendCommand={sendCommand} />;
+};

@@ -1,0 +1,174 @@
+import React from 'react';
+import useWebSocket from 'react-use-websocket';
+
+import { getSocketURL } from '../config';
+import type { ServerResponse, UpdateMapType } from '../types';
+
+type Room = {
+  id: number;
+  x: number;
+  y: number;
+  z: number;
+};
+
+export const MiniMap: React.FC = () => {
+  const { lastJsonMessage } = useWebSocket(getSocketURL(), {
+    share: true,
+    filter(message: WebSocketEventMap['message']) {
+      const serverResponse = JSON.parse(message.data) as ServerResponse;
+      return serverResponse.type === 'updateMap';
+    },
+  });
+
+  // Initialize state
+  const [map, setMap] = React.useState<Map<string, Room>>(new Map());
+  const [currentRoom, setCurrentRoom] = React.useState<Room | null>(null); // Add this line
+
+  React.useEffect(() => {
+    if (lastJsonMessage) {
+      const serverResponse = lastJsonMessage as unknown as ServerResponse; // Type assertion
+      const updateMap = JSON.parse(serverResponse.message) as UpdateMapType;
+      const { current_room, mini_map } = updateMap;
+
+      setCurrentRoom(current_room); // Add this line
+
+      const newMap = new Map<string, Room>();
+      mini_map.forEach((room) => {
+        newMap.set(`${room.x},${room.y}`, room);
+      });
+
+      setMap(newMap);
+    }
+  }, [lastJsonMessage]);
+
+  // Define the bounds of the mini-map
+  const xMin = map.size ? Math.min(...Array.from(map.values()).map((r) => r.x)) : 0;
+  const xMax = map.size ? Math.max(...Array.from(map.values()).map((r) => r.x)) : 0;
+  const yMin = map.size ? Math.min(...Array.from(map.values()).map((r) => r.y)) : 0;
+  const yMax = map.size ? Math.max(...Array.from(map.values()).map((r) => r.y)) : 0;
+
+  const rows = [];
+  // const rowCount = yMax - yMin + 1;
+  // const colCount = xMax - xMin + 1;
+
+  // const aspectRatio = rowCount / colCount;
+
+  // const dynamicStyle: React.CSSProperties = {
+  //   paddingBottom: `${aspectRatio * 100}%`,
+  //   position: 'relative' as const, // assert the type
+  // };
+
+  // Generate grid
+  // Generate grid
+  for (let y = yMax; y >= yMin; y--) {
+    const cells = [];
+    for (let x = xMin; x <= xMax; x++) {
+      const room = map.get(`${x},${y}`);
+      let cellClass = 'empty';
+
+      if (room) {
+        if (currentRoom && room.id === currentRoom.id) {
+          // use currentRoom here
+          cellClass = 'current';
+        } else {
+          cellClass = 'room';
+        }
+      }
+
+      cells.push(<div key={`${x},${y}`} className={`cell ${cellClass}`} />);
+    }
+    rows.push(
+      <div key={y} className="row">
+        {cells}
+      </div>,
+    );
+  }
+
+  return <div className="miniMap">{rows}</div>;
+};
+
+// import React from 'react';
+// import useWebSocket from 'react-use-websocket';
+// import { getSocketURL } from '../config';
+// import type { ServerResponse, UpdateMapType } from '../types';
+
+// export const MiniMap = () => {
+//   // const [openPracticeDialog, setOpenPracticeDialog] = useState(false);
+//   const { sendJsonMessage, lastJsonMessage } = useWebSocket(getSocketURL(), {
+//     share: true,
+//     filter(message: WebSocketEventMap['message']) {
+//       const serverResponse = JSON.parse(message.data) as ServerResponse;
+//       return serverResponse.type === 'updateMap';
+//     },
+//   });
+
+// interface MiniMapProps {
+//   serverResponse: ServerResponse;
+// }
+
+// type Room = {
+//   id: number;
+//   x: number;
+//   y: number;
+//   z: number;
+// };
+
+// const MiniMap: React.FC<MiniMapProps> = ({ serverResponse }) => {
+//   // Parsing the server response
+//   console.log('serverResponse in MiniMap:', serverResponse);
+//   const updateMap = JSON.parse(serverResponse.message) as UpdateMapType;
+//   const { current_room, mini_map } = updateMap;
+
+//   // Create a map object to allow faster look-up
+//   const map = new Map<string, Room>();
+//   mini_map.forEach((room) => {
+//     map.set(`${room.x},${room.y}`, room);
+//   });
+
+//   // Define the bounds of the mini-map
+//   const xMin = Math.min(...mini_map.map((r) => r.x));
+//   const xMax = Math.max(...mini_map.map((r) => r.x));
+//   const yMin = Math.min(...mini_map.map((r) => r.y));
+//   const yMax = Math.max(...mini_map.map((r) => r.y));
+
+//   const rows = [];
+
+//   // Generate grid
+//   for (let y = yMax; y >= yMin; y--) {
+//     const cells = [];
+//     for (let x = xMin; x <= xMax; x++) {
+//       const room = map.get(`${x},${y}`);
+//       let cellClass = 'empty';
+
+//       if (room) {
+//         if (room.id === current_room.id) {
+//           cellClass = 'current';
+//         } else {
+//           cellClass = 'room';
+//         }
+//       }
+
+//       cells.push(<div key={`${x},${y}`} className={`cell ${cellClass}`} />);
+//       //cells.push(<div key={`${x},${y}`} className={`cell ${cellClass}`}>{`${x},${y}`}</div>);
+//     }
+//     rows.push(
+//       <div key={y} className="row">
+//         {cells}
+//       </div>,
+//     );
+//   }
+
+//   console.log('mini_map:', mini_map);
+//   console.log('Bounds:', xMin, xMax, yMin, yMax);
+//   console.log('Rows:', rows);
+
+//   return <div className="miniMap">{rows}</div>;
+//   // return (
+//   //   <div className="miniMap">
+//   //     I am a MiniMap
+//   //     {rows}
+//   //   </div>
+//   // );
+// };
+
+// export default MiniMap;

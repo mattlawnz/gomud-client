@@ -1,0 +1,166 @@
+import Filter1 from '@mui/icons-material/Filter1';
+import SettingsIcon from '@mui/icons-material/Settings';
+import { Button } from '@mui/material';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import { createContext, useContext, useEffect, useState } from 'react';
+import useWebSocket from 'react-use-websocket';
+
+import { getSocketURL } from '../config';
+import type { ClientCommand, ServerResponse, Skill } from '../types';
+
+type SkillsContextType = {
+  skills: { [key: string]: Skill };
+  setSkills: React.Dispatch<React.SetStateAction<{ [key: string]: Skill }>>;
+};
+
+export const SkillsContext = createContext<SkillsContextType>({
+  skills: {},
+  setSkills: () => {},
+});
+
+export const Skills = () => {
+  const { skills, setSkills } = useContext(SkillsContext);
+  const { sendJsonMessage, lastJsonMessage } = useWebSocket(getSocketURL(), {
+    share: true,
+    filter(message: WebSocketEventMap['message']) {
+      console.log('SKILLS message', message);
+      const serverResponse = JSON.parse(message.data) as ServerResponse;
+      return serverResponse.type === 'skills';
+    },
+  });
+
+  useEffect(() => {
+    console.log('lastJsonMessage without filter:', lastJsonMessage);
+  }, [lastJsonMessage]);
+
+  // const { lastJsonMessage, sendJsonMessage } = useWebSocket<SkillData>(getSocketURL(), {
+  //   share: true,
+  //   filter: (message) => {
+  //     console.log('BNav message', message); // Debugging line
+  //     const serverResponse = JSON.parse(message.data) as ServerResponse;
+  //     return serverResponse.type === 'skills';
+  //   },
+  // });
+
+  console.log('Skills component skills:', skills); // Debugging line
+  useEffect(() => {
+    if (lastJsonMessage && lastJsonMessage.skills) {
+      console.log('lastJsonMessage', lastJsonMessage); // Debugging line
+      const newSkills: { [key: string]: Skill & { lastUsed: number } } = {};
+      lastJsonMessage.skills.forEach((skill) => {
+        newSkills[skill.name] = {
+          ...skill,
+          lastUsed: 0,
+        };
+      });
+      setSkills(newSkills);
+    }
+  }, [lastJsonMessage, setSkills]);
+
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     setSkills((prevSkills) => {
+  //       console.log('prevSkills', prevSkills); // Debugging line
+  //       const now = Date.now();
+  //       const updatedSkills = { ...prevSkills };
+
+  //       for (const skillName in prevSkills) {
+  //         const skill = updatedSkills[skillName];
+  //         const lastUsed = skill.lastUsed || 0;
+  //         const cooldownRemaining = lastUsed + skill.cooldown * 1000 - now;
+
+  //         if (cooldownRemaining > 0) {
+  //           skill.buttonText = `${skillName} (${Math.ceil(cooldownRemaining / 1000)}s)`;
+  //           skill.isAvailable = false;
+  //         } else {
+  //           skill.buttonText = skillName;
+  //           skill.isAvailable = true;
+  //         }
+  //       }
+
+  //       return updatedSkills;
+  //     });
+  //   }, 1000);
+
+  //   return () => clearInterval(intervalId);
+  // }, [setSkills]);
+
+  const handleSkillUse = (skillName: string) => {
+    console.log('skillName', skillName); // Debugging line
+    const messageForServer: ClientCommand = {
+      type: 'command',
+      command: `useSkill ${skillName} goblin`,
+    };
+
+    console.log('messageForServer', messageForServer); // Debugging line
+    sendJsonMessage(messageForServer);
+    setSkills((prevSkills) => ({
+      ...prevSkills,
+      [skillName]: {
+        ...prevSkills[skillName],
+        lastUsed: Date.now(),
+      },
+    }));
+  };
+
+  return (
+    <div>
+      {Object.keys(skills).map((skillName) => (
+        <Button
+          key={skillName}
+          variant="contained"
+          style={{ backgroundColor: skills[skillName].isAvailable ? 'green' : 'gray' }}
+          onClick={() => handleSkillUse(skillName)}
+        >
+          {skills[skillName].buttonText}
+        </Button>
+      ))}
+    </div>
+  );
+};
+
+export function MyBottomNavigation() {
+  const { skills } = useContext(SkillsContext);
+  console.log('MyBottomNavigation component skills:', skills); // Debugging line
+  const [value, setValue] = useState(0);
+
+  return (
+    <BottomNavigation
+      value={value}
+      onChange={(event, newValue) => {
+        setValue(newValue);
+      }}
+      showLabels
+      sx={{ width: '100%', position: 'fixed', bottom: 0 }}
+    >
+      <BottomNavigationAction label="Settingsold" icon={<SettingsIcon />} />
+      {Object.values(skills).map((skill, idx) => (
+        <BottomNavigationAction key={idx} label={skill.name} icon={<Filter1 />} />
+      ))}
+    </BottomNavigation>
+  );
+}
+
+// return (
+//   <BottomNavigation
+//     value={value}
+//     onChange={(event, newValue) => {
+//       setValue(newValue);
+//     }}
+//     showLabels
+//     sx={{ width: '100%', position: 'fixed', bottom: 0 }} // Using the sx prop for styling
+//   >
+//     <BottomNavigationAction label="Settings" icon={<SettingsIcon />} />
+//     <BottomNavigationAction label="Item 1" icon={<Filter1 />} />
+//     <BottomNavigationAction label="Item 2" icon={<Filter2 />} />
+//     <BottomNavigationAction label="Item 3" icon={<Filter3 />} />
+//     <BottomNavigationAction label="Item 4" icon={<Filter4 />} />
+//     <BottomNavigationAction label="Item 5" icon={<Filter5 />} />
+//     <BottomNavigationAction label="Item 6" icon={<Filter6 />} />
+//     <BottomNavigationAction label="Item 7" icon={<Filter7 />} />
+//     <BottomNavigationAction label="Item 8" icon={<Filter8 />} />
+//     {/* ... add other icons */}
+//   </BottomNavigation>
+// );
+// }

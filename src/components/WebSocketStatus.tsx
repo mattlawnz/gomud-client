@@ -23,7 +23,7 @@ export const WebSocketStatus = () => {
 
   return (
     <Typography id="modal-modal-title" variant="h6" component="h2">
-      The WebSocket is currently {connectionStatus}
+      WS: {connectionStatus}
     </Typography>
   );
 };

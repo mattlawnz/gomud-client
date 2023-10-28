@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
-import type { RoomType } from '../components/Room';
 import { getSocketURL } from '../config';
-import type { ServerResponse } from '../types';
+import type { RoomType, ServerResponse } from '../types';
 
 export function useRoomData() {
   const [room, setRoom] = useState({} as RoomType);

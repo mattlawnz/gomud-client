@@ -1,0 +1,26 @@
+import { render } from '@testing-library/react';
+
+import { RoomComponent, RoomType } from './Room';
+
+describe('Room', () => {
+  it('should work as expected', () => {
+    const dummyRoomData: RoomType = {
+      type: 'dungeon',
+      title: 'The Dark Dungeon',
+      description: 'A dark and eerie dungeon filled with danger at every turn.',
+      exits: {
+        east: 'The Torture Chamber',
+        west: 'The Hall of Mirrors',
+        north: 'The Armory',
+        south: 'The Crypt',
+      },
+      itemNames: ['Sword', 'Shield', 'Potion'],
+      monsterDescriptions: [],
+    };
+
+    render(<RoomComponent roomData={dummyRoomData} />);
+
+    // TODO: do proper assertions here
+    expect(1 + 1).toBe(2);
+  });
+});

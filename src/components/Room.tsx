@@ -1,47 +1,19 @@
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
+import useWebSocket from 'react-use-websocket';
 
+import { getSocketURL } from '../config';
 import { useRoomData } from '../hooks/useRoomData';
+import type { ClientCommand, RoomType } from '../types';
+import { Characters } from './CharacterList';
+import { Consumables } from './Consumables';
+import { FightsList } from './Fights';
+import { ItemList } from './ItemList';
+import { MonsterList } from './MonsterList';
+import { QuestList } from './QuestList';
 
-export type MonsterEffectType = {
-  name: string;
-  adjective: string;
-  description: string;
-  type: number;
-  duration: number;
-  power: number;
-  stacks: number;
-  //affectedStat: {},
-  msgOnApply: string;
-  msgOnExpire: string;
-  msgOnTick: string;
-};
-
-export type MonsterType = {
-  monsterInstanceID: number;
-  currentHealthPoints: number;
-  currentManaPoints: number;
-  monsterName: string;
-  monsterDescription: string;
-  monsterIcon: string;
-  monsterEffects: MonsterEffectType[];
-};
-
-export type RoomType = {
-  type: string;
-  title: string;
-  description: string;
-  exits: {
-    east?: string;
-    west?: string;
-    north?: string;
-    south?: string;
-  };
-  itemNames: string[];
-  monsterDescriptions: MonsterType[];
-};
-
-type RoomComponentProps = {
+export type RoomComponentProps = {
   roomData: RoomType;
+  sendCommand: (_command: string) => void;
 };
 
 export const RoomComponent = ({ roomData }: RoomComponentProps) => {
@@ -55,41 +27,80 @@ export const RoomComponent = ({ roomData }: RoomComponentProps) => {
     );
   }
 
+  const backgroundImage = roomData.icon ? `url(images/${roomData.icon})` : 'none';
+
   return (
-    <Box>
-      <Typography id="room-title" variant="h5" component="h2">
+    <Box
+      sx={{
+        position: 'relative',
+        padding: '20px',
+        width: '100%',
+        // Apply background image style here
+        backgroundImage: backgroundImage,
+        backgroundSize: 'cover', // You can adjust this as needed
+        backgroundPosition: 'center center', // Center the image vertically
+        // Add an overlay for better text readability
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.4)', // Adjust opacity as needed
+        },
+      }}
+    >
+      <Typography
+        id="room-title"
+        variant="h6"
+        component="h4"
+        align="left"
+        color="white" // Set text color to white for readability
+      >
         {roomData.title}
       </Typography>
-      <Typography id="room-description" variant="body1" component="p">
+      <Typography
+        id="room-description"
+        variant="body1"
+        component="p"
+        align="left"
+        color="white" // Set text color to white for readability
+      >
         {roomData.description}
       </Typography>
-      <Typography id="modal-modal-title" variant="h6" component="h2">
-        Listing Items
-      </Typography>
-      {/* prefer map here over for statement - this builds buttons for every item.*/}
-      {roomData.itemNames.map((item, idx) => (
-        //  each one needs to be unqiely indexed
-        <div key={idx}>
-          <Button variant="contained">{item}</Button>
-          <br />
-        </div>
-      ))}
-      <Typography id="modal-modal-title" variant="h6" component="h2">
-        Listing Monsters
-      </Typography>
-      {roomData.monsterDescriptions.map((monster, idx) => (
-        <div key={idx}>
-          <Button variant="contained">
-            {monster.monsterName + ' (HP: ' + monster.currentHealthPoints + ', MP: ' + monster.currentManaPoints + ')'}
-          </Button>
-          <br />
-        </div>
-      ))}
+
+      <Grid container spacing={3}>
+        <Grid item xs={5}>
+          {/* Monsters on the left */}
+          <MonsterList />
+          <Characters />
+          <FightsList />
+          <QuestList />
+        </Grid>
+        <Grid item xs={5}>
+          {/* Items and Consumables on the right */}
+          <ItemList />
+          <Consumables />
+        </Grid>
+      </Grid>
     </Box>
   );
 };
 
 export const RoomView = () => {
   const roomData = useRoomData();
-  return <RoomComponent roomData={roomData} />;
+  const { sendJsonMessage } = useWebSocket(getSocketURL(), {
+    share: true,
+  });
+
+  const sendCommand = (commandValue: string) => {
+    const messageForServer: ClientCommand = {
+      type: 'command',
+      command: commandValue,
+    };
+    sendJsonMessage(messageForServer);
+  };
+
+  return <RoomComponent roomData={roomData} sendCommand={sendCommand} />;
 };

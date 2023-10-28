@@ -8,6 +8,17 @@ import eslint from 'vite-plugin-eslint';
 export default defineConfig({
   server: {
     port: 3000,
+    proxy: {
+      // Using the proxy instance
+      '/api': {
+        target: 'http://127.0.0.1:8080',
+        changeOrigin: true,
+      },
+      '/websocket': {
+        target: 'http://127.0.0.1:8080',
+        ws: true,
+      },
+    },
   },
   plugins: [
     rollupReplace({

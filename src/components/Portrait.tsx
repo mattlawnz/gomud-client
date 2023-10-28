@@ -1,3 +1,4 @@
+import Avatar from '@mui/material/Avatar';
 import React, { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
@@ -7,8 +8,6 @@ import type { ServerResponse } from '../types';
 export const Portrait = () => {
   const [currentMessage, setCurrentMessage] = useState<ServerResponse>({} as ServerResponse);
 
-  // this will share the main websocket connection with the parent component because we have share:true
-  // the filter will help us to only get the messages that we want i.e. where type is `prompt` for this component
   const { lastJsonMessage } = useWebSocket(getSocketURL(), {
     share: true,
     filter(message: WebSocketEventMap['message']) {
@@ -16,11 +15,17 @@ export const Portrait = () => {
       return serverResponse.type === 'portrait';
     },
   });
+
   useEffect(() => {
+    console.log('lastJsonMessage:', lastJsonMessage); // Log incoming WebSocket message
     if (lastJsonMessage !== null) {
       setCurrentMessage(lastJsonMessage as ServerResponse);
     }
   }, [lastJsonMessage, setCurrentMessage]);
+
+  useEffect(() => {
+    console.log('currentMessage:', currentMessage); // Log the current message state
+  }, [currentMessage]);
 
   if (!currentMessage) {
     return <React.Fragment></React.Fragment>;
@@ -30,18 +35,18 @@ export const Portrait = () => {
   let portraitElement = <React.Fragment></React.Fragment>;
   if (currentMessage.type === 'portrait') {
     portraitElement = (
-      <img
+      <Avatar
         src={currentMessage.message}
         alt="Character Portrait"
-        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        sx={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
       />
     );
   } else {
     portraitElement = (
-      <img
+      <Avatar
         src="images/elf_female_1.png"
         alt="Character Portrait"
-        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        sx={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
       />
     );
   }

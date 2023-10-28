@@ -19,15 +19,16 @@ export const CommandPrompt = () => {
 
   // This function will be called whenever the text in textfield changes
   // It will save the text in the component state so it can be used as a command when `Send` button is clicked
-  const handleTextFieldChange = (event: { target: { value: React.SetStateAction<string> } }) => {
-    setCommandValue(event.target.value);
+  const handleTextFieldChange = (event: { target: { value: string } }) => {
+    const sanitizedValue = event.target.value.replace(/[^a-zA-Z0-9\s]/g, ''); // Remove non-alphanumeric characters except spaces
+    setCommandValue(() => sanitizedValue);
   };
 
   // This function is for `Send` button to send the command in text field to the server
   const sendCommandFromTextField = () => {
     const messageForServer: ClientCommand = {
       type: 'command',
-      command: commandValue,
+      command: `textToChat ${commandValue}`, // Prefix commandValue with 'textToChat'
     };
     sendJsonMessage(messageForServer);
   };
@@ -37,7 +38,7 @@ export const CommandPrompt = () => {
       <TextField
         id="standard-basic"
         name="response"
-        label="Enter command here"
+        label="Chat"
         variant="standard"
         onChange={handleTextFieldChange}
         value={commandValue}

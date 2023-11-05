@@ -2,11 +2,14 @@ import { createTheme, Grid, ThemeProvider } from '@mui/material';
 import { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
+import { AuthStatus } from './AuthStatus';
 import { MyBottomNavigation, SkillsContext } from './components/BottomNavigation';
 import { ChatWindow } from './components/Chat';
 import { CommandPrompt } from './components/CommandPrompt';
 import { CustomStyledItem } from './components/CustomStyledItem';
 import { MainBodyView } from './components/MainBody';
+import { MessageHistory } from './components/MessageHistory';
+import { RoomView } from './components/Room';
 import { getSocketURL } from './config';
 import { LeftAppBar } from './LeftAppBar';
 import { RightAppBar } from './RightAppBar';
@@ -43,7 +46,6 @@ export const WebSocketComponent = (props: WebSocketComponentProps) => {
       return serverResponse.type === 'characterUUID';
     },
   });
-
   // useEffect is a React Hook that lets you synchronize a component with an external system
   // https://react.dev/reference/react/useEffect
   // Whenever anything in the dependencies "[lastJsonMessage, setMessageHistory]" changes, useEffect will be called
@@ -53,7 +55,7 @@ export const WebSocketComponent = (props: WebSocketComponentProps) => {
       if ((lastJsonMessage as ServerResponse).type === 'characterUUID') {
         const messageForServer: ClientResponse = {
           type: 'init',
-          response: character.uuid!,
+          response: character.characters[0].uuid,
         };
         sendJsonMessage(messageForServer);
       }
@@ -83,9 +85,9 @@ export const WebSocketComponent = (props: WebSocketComponentProps) => {
             <CustomStyledItem style={{ height: '100%' }}>
               <MainBodyView />
               <ChatWindow />
-              {/* <RoomView />
-            <MessageHistory />
-            <AuthStatus /> */}
+              <RoomView />
+              <MessageHistory />
+              <AuthStatus />
             </CustomStyledItem>
           </Grid>
           <Grid item xs={2} style={{ overflowY: 'auto' }}>

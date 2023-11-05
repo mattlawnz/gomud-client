@@ -2,7 +2,6 @@ import rollupReplace from '@rollup/plugin-replace';
 import react from '@vitejs/plugin-react';
 import * as path from 'path';
 import { defineConfig } from 'vite';
-import eslint from 'vite-plugin-eslint';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,11 +10,11 @@ export default defineConfig({
     proxy: {
       // Using the proxy instance
       '/api': {
-        target: 'http://127.0.0.1:8080',
+        target: 'https://mud.mlmc.nz',
         changeOrigin: true,
       },
       '/websocket': {
-        target: 'http://127.0.0.1:8080',
+        target: 'https://mud.mlmc.nz',
         ws: true,
       },
     },
@@ -29,7 +28,7 @@ export default defineConfig({
       },
     }),
     react(),
-    eslint(),
+    // eslint(),
   ],
   resolve: process.env.USE_SOURCE
     ? {

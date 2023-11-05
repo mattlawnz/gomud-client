@@ -37,7 +37,7 @@ export const CharacterComponent = (props: CharacterComponentProps) => {
           label="Character"
           onChange={props.onCharacterChange}
         >
-          {props.characters.map((character) => (
+          {props.characters?.map((character) => (
             <MenuItem key={character.name} value={character.name}>
               {character.name}
             </MenuItem>

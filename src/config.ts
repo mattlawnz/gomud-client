@@ -5,5 +5,5 @@
 export function getSocketURL() {
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   const host = window.location.host;
-  return `${protocol}//${host}/websocket`;
+  return `wss://mud.mlmc.nz/websocket`;
 }

@@ -17,6 +17,7 @@ export type RoomComponentProps = {
 };
 
 export const RoomComponent = ({ roomData }: RoomComponentProps) => {
+  console.log('roomData', roomData, '');
   if (!roomData || !roomData.type) {
     return (
       <Box>
@@ -93,7 +94,6 @@ export const RoomView = () => {
   const { sendJsonMessage } = useWebSocket(getSocketURL(), {
     share: true,
   });
-
   const sendCommand = (commandValue: string) => {
     const messageForServer: ClientCommand = {
       type: 'command',
@@ -101,6 +101,5 @@ export const RoomView = () => {
     };
     sendJsonMessage(messageForServer);
   };
-
   return <RoomComponent roomData={roomData} sendCommand={sendCommand} />;
 };

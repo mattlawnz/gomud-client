@@ -13,7 +13,7 @@ export function CharacterStatus() {
   return (
     <div>
       <Link to="/dashboard/character-select">Select Character</Link>
-      <p>Character {JSON.stringify(character)}</p>
+      {/* <p>Character {JSON.stringify(character)}</p> */}
     </div>
   );
 }

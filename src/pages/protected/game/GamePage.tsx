@@ -64,6 +64,7 @@ interface LayoutProps {
 
 function Layout({ toggleTheme }: LayoutProps) {
   const character = useLoaderData() as CharacterType;
+  console.log('charactercomponent', character);
   if (!character) {
     return <div>Loading...</div>;
   }

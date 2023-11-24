@@ -1,25 +1,24 @@
-import { AppBar, Box, Toolbar } from '@mui/material';
+// RightAppBar.tsx
+import MapIcon from '@mui/icons-material/Map';
+import { Box, IconButton } from '@mui/material';
 import type React from 'react';
 
-import { ActionButtonsRight } from './components/ActionButtonsRight';
-import { MiniMap } from './components/MiniMap';
+interface RightAppBarProps {
+  handleRightModalToggle: () => void;
+}
 
-export const RightAppBar: React.FC = () => {
+export const RightAppBar: React.FC<RightAppBarProps> = ({ handleRightModalToggle }) => {
   return (
-    <AppBar position="static" sx={{ width: '100%', height: '100%', flexDirection: 'column' }}>
-      <Toolbar sx={{ flexDirection: 'column', alignItems: 'center', display: 'flex', flex: 1 }}>
-        <Box sx={{ width: '100px', height: '100px' }}></Box>
-        <Box sx={{ flex: '1 1 auto', width: '100%', display: 'flex' }}>
-          {/* Make sure your map component has a classname 'map' and styles are defined accordingly */}
-          <div className="map">
-            <MiniMap />
-          </div>
-        </Box>
-        <Box>
-          <ActionButtonsRight />
-        </Box>
-        {/* Additional components can be added here */}
-      </Toolbar>
-    </AppBar>
+    <Box>
+      <IconButton
+        color="inherit"
+        aria-label="open map"
+        edge="end"
+        onClick={handleRightModalToggle}
+        sx={{ position: 'fixed', bottom: 20, right: 20 }}
+      >
+        <MapIcon />
+      </IconButton>
+    </Box>
   );
 };

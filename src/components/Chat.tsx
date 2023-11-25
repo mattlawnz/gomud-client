@@ -1,3 +1,5 @@
+import ChatIcon from '@mui/icons-material/Chat';
+import { Drawer, IconButton } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -14,6 +16,7 @@ export const ChatWindow = () => {
   const [chatMessages, setChatMessages] = useState<Array<ServerResponse>>([]);
   const [selectedDetail, setSelectedDetail] = useState<null | unknown>(null);
   const [open, setOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const { lastJsonMessage } = useWebSocket(getSocketURL(), {
     share: true,
@@ -38,8 +41,26 @@ export const ChatWindow = () => {
     setOpen(false);
   };
 
+  const toggleChat = () => {
+    setIsChatOpen(!isChatOpen);
+  };
+
   return (
     <div>
+      {/* Chat toggle button */}
+      <IconButton onClick={toggleChat} style={{ position: 'fixed', right: 0, top: '50%' }}>
+        <ChatIcon />
+      </IconButton>
+
+      {/* Chat Drawer */}
+      <Drawer
+        anchor="right"
+        open={isChatOpen}
+        onClose={toggleChat}
+        PaperProps={{
+          style: { width: '300px' }, // Set the width of the chat drawer
+        }}
+      ></Drawer>
       <h1>Chat Window</h1>
       <div>
         {chatMessages.map((message, index) => {

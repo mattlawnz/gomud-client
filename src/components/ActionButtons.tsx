@@ -27,7 +27,6 @@ export const ActionButtons = () => {
     sendJsonMessage(messageForServer);
   };
 
-
   const handlePracticeButtonClick = () => {
     const messageForServer: ClientCommand = {
       type: 'command',
@@ -36,7 +35,6 @@ export const ActionButtons = () => {
     sendJsonMessage(messageForServer);
     // setOpenPracticeDialog(true);
   };
-
 
   return (
     <React.Fragment>

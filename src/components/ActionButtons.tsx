@@ -27,13 +27,6 @@ export const ActionButtons = () => {
     sendJsonMessage(messageForServer);
   };
 
-  // useEffect(() => {
-  //   if (lastJsonMessage !== null) {
-  //     const exitsResponse = lastJsonMessage as ExitsResponse;
-  //     setExits(exitsResponse.exits);
-  //   }
-  // }, [lastJsonMessage]);
-
   const handlePracticeButtonClick = () => {
     const messageForServer: ClientCommand = {
       type: 'command',
@@ -43,77 +36,31 @@ export const ActionButtons = () => {
     // setOpenPracticeDialog(true);
   };
 
-  // const handleClosePracticeDialog = () => {
-  //   setOpenPracticeDialog(false);
-  // };
-
   return (
     <React.Fragment>
       <Grid container spacing={2} justifyContent="center" alignItems="center">
-        {/* Row for North */}
-        {/* <Grid item xs={12} style={{ textAlign: 'center' }}>
-          <Button variant="contained" onClick={() => sendCommand('go north')} disabled={!exits['north']}>
-            North
-          </Button>
-        </Grid> */}
-
-        {/* Row for West and East
-        <Grid item container xs={12} justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Button variant="contained" onClick={() => sendCommand('go west')} disabled={!exits['west']}>
-              West
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button variant="contained" onClick={() => sendCommand('go east')} disabled={!exits['east']}>
-              East
-            </Button>
-          </Grid>
-        </Grid> */}
-
-        {/* Row for Up and Down
-        <Grid item container xs={12} justifyContent="space-between" alignItems="center">
-          <Grid item>
-            <Button variant="contained" onClick={() => sendCommand('go up')} disabled={!exits['up']}>
-              Up
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button variant="contained" onClick={() => sendCommand('go down')} disabled={!exits['down']}>
-              Down
-            </Button>
-          </Grid>
-        </Grid> */}
-
-        {/* Row for South
-        <Grid item xs={12} style={{ textAlign: 'center' }}>
-          <Button variant="contained" onClick={() => sendCommand('go south')} disabled={!exits['south']}>
-            South
-          </Button>
-        </Grid> */}
-
         {/* Row for other actions */}
         <Grid item xs={12}>
           <CustomStyledItem>
-            <Button variant="contained" onClick={() => sendCommand('inventory')}>
+            <Button variant="contained" sx={{ width: '100%' }} onClick={() => sendCommand('inventory')}>
               Inventory
             </Button>
-            <Button variant="contained" onClick={() => sendCommand('equipment')}>
+            <Button variant="contained" sx={{ width: '100%' }} onClick={() => sendCommand('equipment')}>
               Equipment
             </Button>
-            <Button variant="contained" onClick={() => sendCommand('look')}>
+            <Button variant="contained" sx={{ width: '100%' }} onClick={() => sendCommand('look')}>
               Look
             </Button>
-            <Button variant="contained" onClick={() => sendCommand('score')}>
+            <Button variant="contained" sx={{ width: '100%' }} onClick={() => sendCommand('score')}>
               Score
             </Button>
-            <Button variant="contained" onClick={() => sendCommand('save')}>
+            <Button variant="contained" sx={{ width: '100%' }} onClick={() => sendCommand('save')}>
               Save
             </Button>
-            <Button variant="contained" onClick={() => sendCommand('recall')}>
+            <Button variant="contained" sx={{ width: '100%' }} onClick={() => sendCommand('recall')}>
               RECALL
             </Button>
-            <Button variant="contained" onClick={handlePracticeButtonClick}>
+            <Button variant="contained" sx={{ width: '100%' }} onClick={handlePracticeButtonClick}>
               Practice
             </Button>
           </CustomStyledItem>

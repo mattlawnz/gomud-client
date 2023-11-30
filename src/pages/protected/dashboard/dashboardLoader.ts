@@ -3,28 +3,33 @@ import { redirect } from 'react-router-dom';
 
 import { authProvider } from '../../../auth';
 
-async function fetchCharacterData(username: string) {
-  try {
-    const response = await fetch(`https://mud.mlmc.nz/api/users/${username}/characters`, {
-      method: 'GET',
-    });
+// async function fetchCharacterData(username: string) {
+//   try {
+//     const response = await fetch(`http://localhost:8080/users/${username}/characters`, {
+//       method: 'GET',
+//     });
 
-    if (response.ok) {
-      const data = await response.json();
-      console.log(`Got character ${JSON.stringify(data)}`);
-      return data;
-    } else {
-      // Handle HTTP error responses here
-      const errorData = await response.json();
-      console.log(errorData);
-      throw new Error(errorData.errorMessage);
-    }
-  } catch (error) {
-    // Handle network errors here
-    console.error('Network error:', error);
-    throw new Error('Network error occurred');
-  }
-}
+//     if (response.ok) {
+//       // If signin is successful, update the auth provider state
+//       const data = (await response.json()) as CharacterType[];
+//       console.log(`Got character ${JSON.stringify(data)}`);
+//       return data;
+//     } else {
+//       const errorData = await response.json();
+//       console.log(errorData);
+//       // Handle signin error here
+//       throw new Error(errorData.errorMessage);
+//     }
+//   } catch (err) {
+//     if (err instanceof Error) {
+//       throw new Error(err.message);
+//     } else {
+//       // Handle any other error that might occur during the API call
+//       throw new Error('Unknown error during sign up');
+//     }
+//   }
+//   return null;
+// }
 
 export async function dashboardLoader({ request }: LoaderFunctionArgs) {
   // If the user is not logged in and tries to access `/protected`, we redirect
@@ -37,8 +42,8 @@ export async function dashboardLoader({ request }: LoaderFunctionArgs) {
   }
 
   // return redirect('/dashboard/game');
-  if (authProvider.username) {
-    return await fetchCharacterData(authProvider?.username);
-  }
+  // if (authProvider.username) {
+  //   return await fetchCharacterData(authProvider.username);
+  // }
   return null;
 }

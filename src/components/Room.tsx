@@ -9,6 +9,7 @@ import { Consumables } from './Consumables';
 import { FightsList } from './Fights';
 import { ItemList } from './ItemList';
 import { MonsterList } from './MonsterList';
+import { PromptOutput } from './PromptOutput';
 import { QuestList } from './QuestList';
 
 export type RoomComponentProps = {
@@ -17,7 +18,6 @@ export type RoomComponentProps = {
 };
 
 export const RoomComponent = ({ roomData }: RoomComponentProps) => {
-  console.log('roomData', roomData, '');
   if (!roomData || !roomData.type) {
     return (
       <Box>
@@ -36,11 +36,13 @@ export const RoomComponent = ({ roomData }: RoomComponentProps) => {
         position: 'relative',
         padding: '20px',
         width: '100%',
-        // Apply background image style here
+        minHeight: '100vh',
+        display: 'flex', // Use flex layout to give more control over the child elements
+        flexDirection: 'column', // Stack children vertically
+        justifyContent: 'space-between',
         backgroundImage: backgroundImage,
-        backgroundSize: 'cover', // You can adjust this as needed
-        backgroundPosition: 'center center', // Center the image vertically
-        // Add an overlay for better text readability
+        backgroundSize: 'cover',
+        backgroundPosition: 'center center',
         '&::before': {
           content: '""',
           position: 'absolute',
@@ -48,43 +50,41 @@ export const RoomComponent = ({ roomData }: RoomComponentProps) => {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'rgba(0, 0, 0, 0.4)', // Adjust opacity as needed
+          background: 'rgba(0, 0, 0, 0.4)',
+          zIndex: -1,
         },
       }}
     >
-      <Typography
-        id="room-title"
-        variant="h6"
-        component="h4"
-        align="left"
-        color="white" // Set text color to white for readability
-      >
-        {roomData.title}
-      </Typography>
-      <Typography
-        id="room-description"
-        variant="body1"
-        component="p"
-        align="left"
-        color="white" // Set text color to white for readability
-      >
-        {roomData.description}
-      </Typography>
+      {/* This container will hold the prompt output and the room description side by side */}
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
+        <PromptOutput />
+        <div style={{ flex: 1, paddingLeft: '20px' }}>
+          {' '}
+          {/* Add some space between the components */}
+          <Typography id="room-title" variant="h6" component="h4" align="left" color="white">
+            {roomData.title}
+          </Typography>
+          <Typography id="room-description" variant="body1" component="p" align="left" color="white">
+            {roomData.description}
+          </Typography>
+        </div>
+      </div>
 
+      {/* The rest of your code remains unchanged */}
       <Grid container spacing={3}>
         <Grid item xs={5}>
-          {/* Monsters on the left */}
           <MonsterList />
           <Characters />
           <FightsList />
           <QuestList />
         </Grid>
         <Grid item xs={5}>
-          {/* Items and Consumables on the right */}
           <ItemList />
           <Consumables />
         </Grid>
       </Grid>
+
+      <div style={{ flexGrow: 1 }}></div>
     </Box>
   );
 };
@@ -94,6 +94,7 @@ export const RoomView = () => {
   const { sendJsonMessage } = useWebSocket(getSocketURL(), {
     share: true,
   });
+
   const sendCommand = (commandValue: string) => {
     const messageForServer: ClientCommand = {
       type: 'command',
@@ -101,5 +102,6 @@ export const RoomView = () => {
     };
     sendJsonMessage(messageForServer);
   };
+
   return <RoomComponent roomData={roomData} sendCommand={sendCommand} />;
 };

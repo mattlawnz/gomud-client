@@ -28,7 +28,6 @@ export default defineConfig({
       },
     }),
     react(),
-    // eslint(),
   ],
   resolve: process.env.USE_SOURCE
     ? {

@@ -64,14 +64,13 @@ interface LayoutProps {
 
 function Layout({ toggleTheme }: LayoutProps) {
   const character = useLoaderData() as CharacterType;
-  console.log('charactercomponent', character);
   if (!character) {
     return <div>Loading...</div>;
   }
 
   return (
     <div>
-      <button onClick={toggleTheme}>Toggle Theme</button>
+      {/* <button onClick={toggleTheme}>Toggle Theme</button> */}
 
       <WebSocketComponent character={character} />
     </div>

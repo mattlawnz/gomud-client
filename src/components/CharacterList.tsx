@@ -43,7 +43,6 @@ export const Characters = () => {
     sendJsonMessage(messageForServer);
     setActiveItemId(null);
   };
-
   return (
     <div style={{ textAlign: 'left' }}>
       {players && players.length > 0 && <Typography variant="h6">Players in Room</Typography>}
@@ -51,7 +50,7 @@ export const Characters = () => {
         {players.map((player, idx) => (
           <ButtonGroup key={idx} variant="text" size="small" style={{ margin: '5px 0' }}>
             <Button
-              onClick={() => setActiveItemId(player.id)}
+              onClick={() => setActiveItemId(`players${idx}`)}
               sx={{
                 transition: 'all 0.3s ease',
                 '&:hover': {
@@ -62,11 +61,11 @@ export const Characters = () => {
               {`Lvl ${player.level} - ${player.displayName}`}
               <ArrowDropDownIcon fontSize="small" />
             </Button>
-            {activeItemId === player.id && (
-              <>
+            {activeItemId === `players${idx}` && (
+              <div id={`players${idx}`}>
                 <Button onClick={() => handleLook(player)}>Look</Button>
                 <Button onClick={() => handleInvite(player)}>Invite</Button> {/* New Invite Button */}
-              </>
+              </div>
             )}
           </ButtonGroup>
         ))}

@@ -40,7 +40,7 @@ export const ActionButtons = () => {
     <React.Fragment>
       <Grid container spacing={2} justifyContent="center" alignItems="center">
         {/* Row for other actions */}
-        <Grid item xs={12}>
+        <Grid item xs={12} sx={{ width: '100%' }}>
           <CustomStyledItem>
             <Button variant="contained" sx={{ width: '100%' }} onClick={() => sendCommand('inventory')}>
               Inventory

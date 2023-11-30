@@ -8,7 +8,7 @@ import type { CharacterList, ClientCommand, ServerResponse } from '../types';
 
 export const Characters = () => {
   const [players, setPlayers] = useState<CharacterList[]>([]);
-  const [activeItemId, setActiveItemId] = useState<number | null>(null);
+  const [activeItemId, setActiveItemId] = useState<string | null>(null);
 
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(getSocketURL(), {
     share: true,
@@ -45,7 +45,11 @@ export const Characters = () => {
   };
   return (
     <div style={{ textAlign: 'left' }}>
-      {players && players.length > 0 && <Typography variant="h6">Players in Room</Typography>}
+      {players && players.length > 0 && (
+        <Typography variant="h6" sx={{ color: 'white' }}>
+          Players in Room
+        </Typography>
+      )}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
         {players.map((player, idx) => (
           <ButtonGroup key={idx} variant="text" size="small" style={{ margin: '5px 0' }}>

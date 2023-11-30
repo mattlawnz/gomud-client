@@ -54,7 +54,7 @@ export const Characters = () => {
         {players.map((player, idx) => (
           <ButtonGroup key={idx} variant="text" size="small" style={{ margin: '5px 0' }}>
             <Button
-              onClick={() => setActiveItemId(`players${idx}`)}
+              onClick={() => setActiveItemId(`player${idx}`)}
               sx={{
                 transition: 'all 0.3s ease',
                 '&:hover': {
@@ -65,8 +65,8 @@ export const Characters = () => {
               {`Lvl ${player.level} - ${player.displayName}`}
               <ArrowDropDownIcon fontSize="small" />
             </Button>
-            {activeItemId === `players${idx}` && (
-              <div id={`players${idx}`}>
+            {activeItemId === `player${idx}` && (
+              <div id={`player${idx}`}>
                 <Button onClick={() => handleLook(player)}>Look</Button>
                 <Button onClick={() => handleInvite(player)}>Invite</Button> {/* New Invite Button */}
               </div>

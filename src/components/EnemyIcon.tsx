@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
+import goblinMale1Image from '../assets/images/goblin_male_1.png';
 import { getSocketURL } from '../config';
 import type { ServerResponse } from '../types';
 
@@ -39,7 +40,7 @@ export const EnemyIcon = () => {
   } else {
     EnemyIconElement = (
       <img
-        src="images/goblin_male_1.png"
+        src={goblinMale1Image}
         alt="Character EnemyIcon"
         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
       />

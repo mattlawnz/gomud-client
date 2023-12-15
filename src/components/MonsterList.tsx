@@ -31,7 +31,7 @@ export const MonsterList = () => {
   }, [lastJsonMessage]);
 
   return (
-    <div style={{ textAlign: 'left' }}>
+    <div style={{ height: '14%', textAlign: 'left', border: '1px solid white', background: 'rgba(0, 0, 0, 0.5)' }}>
       {' '}
       {/* Apply left alignment here */}
       {monsters &&

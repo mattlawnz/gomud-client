@@ -2,6 +2,7 @@ import { Button, ButtonGroup } from '@mui/material';
 import { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
+import healthIcon from '../assets/icons/health.png';
 import { getSocketURL } from '../config';
 import type { ClientCommand, ConsumablesInRoomResponse, ConsumableType, ServerResponse } from '../types';
 
@@ -43,10 +44,20 @@ export const Consumables = () => {
             size="small"
             style={{ justifyContent: 'flex-start', display: 'block', marginBottom: '10px' }}
           >
-            <Button onClick={() => setActiveItemId(activeItemId === idx ? null : idx)}>
+            <Button
+              onClick={() => setActiveItemId(activeItemId === idx ? null : idx)}
+              sx={{
+                '@media (min-width: 1440px)': {
+                  fontSize: '26px !important',
+                },
+                '@media (min-width: 1996px)': {
+                  fontSize: '30px !important',
+                },
+              }}
+            >
               {item.consumableName === 'Drust' && (
                 <img
-                  src="icons/health.png"
+                  src={healthIcon}
                   alt="Health Icon"
                   style={{
                     marginRight: '8px',
@@ -60,7 +71,19 @@ export const Consumables = () => {
 
             {activeItemId === idx && (
               <>
-                <Button onClick={() => handleGet(item)}>Get</Button>
+                <Button
+                  onClick={() => handleGet(item)}
+                  sx={{
+                    '@media (min-width: 1440px)': {
+                      fontSize: '26px !important',
+                    },
+                    '@media (min-width: 1996px)': {
+                      fontSize: '30px !important',
+                    },
+                  }}
+                >
+                  Get
+                </Button>
               </>
             )}
           </ButtonGroup>

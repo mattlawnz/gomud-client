@@ -47,7 +47,7 @@ export const RoomComponent = ({ roomData }: RoomComponentProps) => {
           {' '}
           {/* Monsters on the left */}
           <MonsterList />
-          <Characters />
+           />
           <FightsList />
           <QuestList />
         </Grid>

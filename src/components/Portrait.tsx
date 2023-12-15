@@ -2,6 +2,7 @@ import Avatar from '@mui/material/Avatar';
 import React, { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
+import elfFemale1Image from '../assets/images/elf_female_1.png';
 import { getSocketURL } from '../config';
 import type { ServerResponse } from '../types';
 
@@ -44,7 +45,7 @@ export const Portrait = () => {
   } else {
     portraitElement = (
       <Avatar
-        src="images/elf_female_1.png"
+        src={elfFemale1Image}
         alt="Character Portrait"
         sx={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
       />

@@ -6,7 +6,7 @@ import type { CharacterType } from '../../../types';
 
 async function fetchCharacterData(username: string) {
   try {
-    const response = await fetch(`https://mud.mlmc.nz/api/users/${username}/characters`, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL_HTTP}/api/users/${username}/characters`, {
       method: 'GET',
     });
 

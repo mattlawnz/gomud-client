@@ -20,7 +20,7 @@ export const ActionButtons = () => {
     },
   });
 
-  const [exits, setExits] = useState<{ [direction: string]: string }>({});
+  // const [exits, setExits] = useState<{ [direction: string]: string }>({});
 
   // This function will be called from Button elements to send commands to the server
   const sendCommand = (commandValue: string) => {
@@ -157,7 +157,7 @@ export const ActionButtons = () => {
         </Grid>
         <Dialog open={openPracticeDialog} onClose={handleClosePracticeDialog} aria-labelledby="practice-dialog-title">
           <DialogTitle id="practice-dialog-title">Skill Tree</DialogTitle>
-          <SkillTreeComponent serverResponse={serverResponse} />
+          {serverResponse && <SkillTreeComponent serverResponse={serverResponse} />}
         </Dialog>
       </Grid>
     </React.Fragment>

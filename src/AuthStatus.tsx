@@ -1,5 +1,6 @@
 import { Box, Button } from '@mui/material';
 import { useFetcher, useRouteLoaderData } from 'react-router-dom';
+
 import type { RouterRootData } from './types';
 
 export function AuthStatus() {

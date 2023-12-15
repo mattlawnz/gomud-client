@@ -39,11 +39,11 @@ const darkTheme = createTheme({
 });
 
 export function GamePage() {
-  const [themeName, setThemeName] = useState('light');
+  const [themeName] = useState('light');
 
-  const toggleTheme = () => {
-    setThemeName((currentTheme) => (currentTheme === 'light' ? 'dark' : 'light'));
-  };
+  // const toggleTheme = () => {
+  //   setThemeName((currentTheme) => (currentTheme === 'light' ? 'dark' : 'light'));
+  // };
 
   useWebSocket(getSocketURL(), {
     onOpen: () => {
@@ -53,16 +53,16 @@ export function GamePage() {
 
   return (
     <ThemeProvider theme={themeName === 'light' ? lightTheme : darkTheme}>
-      <Layout toggleTheme={toggleTheme} />
+      <Layout />
     </ThemeProvider>
   );
 }
 
-interface LayoutProps {
-  toggleTheme: () => void;
-}
+// interface LayoutProps {
+//   toggleTheme: () => void;
+// }
 
-function Layout({ toggleTheme }: LayoutProps) {
+function Layout() {
   const character = useLoaderData() as CharacterType;
   if (!character) {
     return <div>Loading...</div>;

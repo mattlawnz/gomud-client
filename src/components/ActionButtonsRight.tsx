@@ -25,7 +25,7 @@ export const ActionButtonsRight = () => {
   };
 
   const buttonStyle = {
-    fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem', xl: '2rem' },
+    fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem', xl: '1.5rem' },
     padding: { xs: '8px 16px', sm: '10px 20px', md: '12px 24px', xl: '16px 30px' },
     margin: '4px', // Added a margin for some spacing between the buttons
     minWidth: '20px', // Ensuring a minimum touch target size

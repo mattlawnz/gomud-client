@@ -84,7 +84,7 @@ export const SkillTreeComponent = (props: SkillTreeProps) => {
     [key: number]: SkillTree[];
   }
   // console.log('Skills:', skills);
-  const groupedSkills: GroupedSkills = groupByTier(skills?.filter((skill) => skill.IsAvailable));
+  const groupedSkills: GroupedSkills = groupByTier(skills?.filter((skill) => skill?.IsAvailable));
   // console.log('Grouped Skills:', groupedSkills);
   return (
     <div>

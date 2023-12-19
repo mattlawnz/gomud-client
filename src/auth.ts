@@ -54,7 +54,7 @@ export const authProvider: AuthProvider = {
     //await new Promise((r) => setTimeout(r, 500)); // fake delay
     //const serverUrl = process.env.REACT_APP_SERVER_URL || 'http://localhost:8080';
     try {
-      const response = await fetch(`/api/signup`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL_HTTP}/api/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -87,7 +87,8 @@ export const authProvider: AuthProvider = {
   async signin(username: string, password: string) {
     //await new Promise((r) => setTimeout(r, 500)); // fake delay
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL_HTTP}/api/login`, {
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

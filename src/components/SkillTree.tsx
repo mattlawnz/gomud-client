@@ -9,7 +9,7 @@ type SkillTreeProps = {
   serverResponse: ServerResponse;
 };
 
-export const SkillTreeComponent = (props: any) => {
+export const SkillTreeComponent = (props: SkillTreeProps) => {
   const { serverResponse } = props;
 
   // Initialize with parsed skilltree if available

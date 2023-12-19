@@ -88,7 +88,6 @@ export const authProvider: AuthProvider = {
     //await new Promise((r) => setTimeout(r, 500)); // fake delay
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL_HTTP}/api/login`, {
-
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

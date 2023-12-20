@@ -8,7 +8,6 @@ import type { ClientCommand, ItemsInRoomResponse, ItemType, ServerResponse } fro
 export const ItemList = () => {
   const [items, setItems] = useState<ItemType[]>([]);
   const [activeItemId, setActiveItemId] = useState<number | null>(null);
-
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(getSocketURL(), {
     share: true,
     filter(message: WebSocketEventMap['message']) {
@@ -69,9 +68,45 @@ export const ItemList = () => {
             </Button>
             {activeItemId === item.itemInstanceID && (
               <>
-                <Button onClick={() => handleLook(item)}>Look</Button>
-                <Button onClick={() => handleGet(item)}>Get</Button>
-                <Button onClick={() => itemToChat(item)}>Chat</Button>
+                <Button
+                  onClick={() => handleLook(item)}
+                  sx={{
+                    '@media (min-width: 1440px)': {
+                      fontSize: '26px !important',
+                    },
+                    '@media (min-width: 1996px)': {
+                      fontSize: '30px !important',
+                    },
+                  }}
+                >
+                  Look
+                </Button>
+                <Button
+                  onClick={() => handleGet(item)}
+                  sx={{
+                    '@media (min-width: 1440px)': {
+                      fontSize: '26px !important',
+                    },
+                    '@media (min-width: 1996px)': {
+                      fontSize: '30px !important',
+                    },
+                  }}
+                >
+                  Get
+                </Button>
+                <Button
+                  onClick={() => itemToChat(item)}
+                  sx={{
+                    '@media (min-width: 1440px)': {
+                      fontSize: '26px !important',
+                    },
+                    '@media (min-width: 1996px)': {
+                      fontSize: '30px !important',
+                    },
+                  }}
+                >
+                  Chat
+                </Button>
               </>
             )}
           </ButtonGroup>

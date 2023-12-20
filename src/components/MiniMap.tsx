@@ -155,5 +155,6 @@ export const MiniMap: React.FC = () => {
       </div>,
     );
   }
+  console.log('asdf', rows);
   return <div className="miniMap">{rows}</div>;
 };

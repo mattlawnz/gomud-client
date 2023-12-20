@@ -9,13 +9,13 @@ const classesData = [
     value: 'mage',
     title: 'Mage',
     description: 'Mages cast spells and use magical powers.',
-    image: '/images/icon_mage.png', // Replace with actual mage image URL
+    image: '/src/assets/images/icon_mage.png', // Replace with actual mage image URL
   },
   {
     value: 'warrior',
     title: 'Warrior',
     description: 'Warriors are strong and tough, experts in melee combat.',
-    image: '/images/icon_warrior.png', // Replace with actual warrior image URL
+    image: '/src/assets/images/icon_warrior.png', // Replace with actual warrior image URL
   },
 ];
 const racesData = [
@@ -23,15 +23,15 @@ const racesData = [
     value: 'human',
     title: 'Human',
     description: 'Humans are versatile and adaptive.',
-    maleImage: '/images/human_male_1.png',
-    femaleImage: '/images/human_female_1.png',
+    maleImage: '/src/assets/images/human_male_1.png',
+    femaleImage: '/src/assets/images/human_female_1.png',
   },
   {
     value: 'elf',
     title: 'Elf',
     description: 'Elves are elegant and have a natural affinity for magic.',
-    maleImage: '/images/goblin_male_1.png',
-    femaleImage: '/images/elf_female_1.png',
+    maleImage: '/src/assets/images/goblin_male_1.png',
+    femaleImage: '/src/assets/images/elf_female_1.png',
   },
 ];
 

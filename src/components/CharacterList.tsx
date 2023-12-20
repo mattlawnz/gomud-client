@@ -8,7 +8,7 @@ import type { CharacterList, ClientCommand, ServerResponse } from '../types';
 
 export const Characters = () => {
   const [players, setPlayers] = useState<CharacterList[]>([]);
-  const [activeItemId, setActiveItemId] = useState<number | null>(null);
+  const [activeItemId, setActiveItemId] = useState<string | null>(null);
 
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(getSocketURL(), {
     share: true,
@@ -43,30 +43,100 @@ export const Characters = () => {
     sendJsonMessage(messageForServer);
     setActiveItemId(null);
   };
-
   return (
     <div style={{ textAlign: 'left' }}>
-      {players && players.length > 0 && <Typography variant="h6">Players in Room</Typography>}
+      {players && players.length > 0 && (
+        <Typography
+          variant="h6"
+          sx={{
+            color: 'white',
+            '@media (max-width: 768px)': {
+              fontSize: '12px !important',
+            },
+            '@media (min-width: 1440px)': {
+              fontSize: '24px !important',
+            },
+            '@media (min-width: 1996px)': {
+              fontSize: '30px !important',
+            },
+          }}
+        >
+          Players in Room
+        </Typography>
+      )}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
         {players.map((player, idx) => (
-          <ButtonGroup key={idx} variant="text" size="small" style={{ margin: '5px 0' }}>
+          <ButtonGroup
+            key={idx}
+            variant="text"
+            size="small"
+            sx={{
+              margin: '5px 0',
+            }}
+          >
             <Button
-              onClick={() => setActiveItemId(player.id)}
+              onClick={() => setActiveItemId(`player${idx}`)}
               sx={{
                 transition: 'all 0.3s ease',
                 '&:hover': {
                   transform: 'scale(1.05)',
+                },
+                '@media (max-width: 768px)': {
+                  padding: 0,
+                  fontSize: '10px !important',
+                  letterSpacing: '-1.5px',
+                },
+                '@media (min-width: 1440px)': {
+                  fontSize: '20px !important',
+                },
+                '@media (min-width: 1996px)': {
+                  fontSize: '26px !important',
                 },
               }}
             >
               {`Lvl ${player.level} - ${player.displayName}`}
               <ArrowDropDownIcon fontSize="small" />
             </Button>
-            {activeItemId === player.id && (
-              <>
-                <Button onClick={() => handleLook(player)}>Look</Button>
-                <Button onClick={() => handleInvite(player)}>Invite</Button> {/* New Invite Button */}
-              </>
+            {activeItemId === `player${idx}` && (
+              <div id={`player${idx}`}>
+                <Button
+                  onClick={() => handleLook(player)}
+                  sx={{
+                    '@media (max-width: 768px)': {
+                      padding: 0,
+                      fontSize: '10px !important',
+                      letterSpacing: '-1.5px',
+                    },
+                    '@media (min-width: 1440px)': {
+                      fontSize: '20px !important',
+                    },
+                    '@media (min-width: 1996px)': {
+                      fontSize: '26px !important',
+                    },
+                  }}
+                >
+                  Look
+                </Button>
+                <Button
+                  onClick={() => handleInvite(player)}
+                  sx={{
+                    '@media (max-width: 768px)': {
+                      padding: 0,
+                      fontSize: '10px !important',
+                      letterSpacing: '-1.5px',
+                    },
+                    '@media (min-width: 1440px)': {
+                      fontSize: '20px !important',
+                    },
+                    '@media (min-width: 1996px)': {
+                      fontSize: '26px !important',
+                    },
+                  }}
+                >
+                  Invite
+                </Button>{' '}
+                {/* New Invite Button */}
+              </div>
             )}
           </ButtonGroup>
         ))}

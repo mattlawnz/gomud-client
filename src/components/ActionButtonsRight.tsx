@@ -25,10 +25,14 @@ export const ActionButtonsRight = () => {
   };
 
   const buttonStyle = {
-    fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' },
-    padding: { xs: '8px 16px', sm: '10px 20px', md: '12px 24px' },
+    fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem', xl: '1.5rem' },
+    padding: { xs: '8px 16px', sm: '10px 20px', md: '12px 24px', xl: '16px 30px' },
     margin: '4px', // Added a margin for some spacing between the buttons
-    minWidth: '64px', // Ensuring a minimum touch target size
+    minWidth: '20px', // Ensuring a minimum touch target size
+    borderRadius: '15px',
+    '@media (max-height: 700px)': {
+      padding: '4px 20px !important',
+    },
   };
 
   useEffect(() => {
@@ -41,11 +45,13 @@ export const ActionButtonsRight = () => {
   return (
     <Box
       sx={{
-        position: 'fixed',
-        left: '50%',
-        bottom: '10px',
-        transform: 'translateX(-50%)',
-        zIndex: 1300,
+        position: 'absolute',
+        bottom: 0,
+        padding: '8px',
+        width: '100%',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        borderRadius: '20px',
+        zIndex: 10,
       }}
     >
       <Grid container spacing={1}>

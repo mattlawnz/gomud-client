@@ -5,7 +5,6 @@ import { Box, createTheme, Drawer, Grid, IconButton, Modal, ThemeProvider } from
 import { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
-import { ActionButtonsRight } from './components/ActionButtonsRight';
 import { MyBottomNavigation, SkillsContext } from './components/BottomNavigation';
 import { ChatWindow } from './components/Chat';
 import { CommandPrompt } from './components/CommandPrompt';
@@ -78,13 +77,13 @@ export const WebSocketComponent = (props: WebSocketComponentProps) => {
   return (
     <ThemeProvider theme={darkTheme}>
       <SkillsContext.Provider value={{ skills, setSkills }}>
-        <Grid container style={{ height: '100vh', overflow: 'hidden' }}>
+        <Grid container style={{ position: 'fixed', top: 0, height: '100%' }}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
             onClick={handleLeftDrawerToggle}
-            sx={{ position: 'absolute', top: 10, left: 10, zIndex: 1201 }}
+            sx={{ position: 'absolute', top: 0, left: 0, margin: 0, padding: 0, color: 'white', zIndex: 1201 }}
           >
             <MenuIcon />
           </IconButton>
@@ -97,26 +96,35 @@ export const WebSocketComponent = (props: WebSocketComponentProps) => {
               keepMounted: true,
             }}
             sx={{
-              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 240 },
+              '& .MuiDrawer-paper': {
+                boxSizing: 'border-box',
+                width: 240,
+                '@media (min-width: 1440px)': {
+                  width: 340,
+                },
+                '@media (min-width: 1996px)': {
+                  width: 440,
+                },
+              },
             }}
           >
             <LeftAppBar />
             <CommandPrompt />
           </Drawer>
 
-          <Grid item xs={12} style={{ height: 'calc(100vh - height_of_bottom_bar)', overflowY: 'auto' }}>
+          <Grid item xs={12} style={{ height: '100%', overflowY: 'auto' }}>
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
               <MainBodyView />
               {/* <ChatWindow /> */}
             </div>
           </Grid>
 
+          {/* Hamburger */}
           <IconButton
-            color="inherit"
             aria-label="open modal"
             edge="end"
             onClick={handleRightModalToggle}
-            sx={{ position: 'absolute', top: 10, right: 10, zIndex: 1201 }}
+            sx={{ position: 'absolute', top: 0, right: 0, margin: 0, padding: 0, color: 'white', zIndex: 1201 }}
           >
             <MenuIcon />
           </IconButton>
@@ -140,13 +148,29 @@ export const WebSocketComponent = (props: WebSocketComponentProps) => {
             </Box>
           </Modal>
 
-          <Grid item xs={12}>
+          <Grid
+            item
+            xs={12}
+            sx={{
+              position: 'absolute',
+              left: '0',
+              bottom: '2px',
+              width: 'calc(100% - 40px)',
+              height: '15%',
+              margin: '0 20px',
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              border: '1px solid white',
+              transition: '0.3s ease-in-out',
+              overflow: 'auto',
+              zIndex: '15',
+              '@media (max-width: 768px)': {
+                width: 'calc(100% - 20px)',
+                margin: '0 10px',
+              },
+            }}
+          >
             <MyBottomNavigation />
           </Grid>
-          {/* Position ActionButtonsRight */}
-          <Box sx={{ position: 'fixed', right: 10, bottom: 10, zIndex: 1300 }}>
-            <ActionButtonsRight />
-          </Box>
         </Grid>
         {/* Toggle Chat Icon */}
         <IconButton onClick={toggleChat} sx={{ position: 'fixed', bottom: 20, right: 20, zIndex: 1400 }}>

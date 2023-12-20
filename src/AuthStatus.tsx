@@ -1,3 +1,4 @@
+import { Box, Button } from '@mui/material';
 import { useFetcher, useRouteLoaderData } from 'react-router-dom';
 
 import type { RouterRootData } from './types';
@@ -8,19 +9,54 @@ export function AuthStatus() {
   const fetcher = useFetcher();
 
   if (!user) {
-    return <p>You are not logged in.</p>;
+    return (
+      <Box
+        sx={{
+          '@media (min-width: 1440px)': {
+            fontSize: '26px !important',
+          },
+          '@media (min-width: 1996px)': {
+            fontSize: '30px !important',
+          },
+        }}
+      >
+        You are not logged in.
+      </Box>
+    );
   }
 
   const isLoggingOut = fetcher.formData != null;
 
   return (
-    <div>
+    <Box>
       <fetcher.Form method="post" action="/logout">
-        <button type="submit" disabled={isLoggingOut}>
+        <Button
+          type="submit"
+          disabled={isLoggingOut}
+          sx={{
+            '@media (min-width: 1440px)': {
+              fontSize: '26px !important',
+            },
+            '@media (min-width: 1996px)': {
+              fontSize: '30px !important',
+            },
+          }}
+        >
           {isLoggingOut ? 'Signing out...' : 'Sign out'}
-        </button>
+        </Button>
       </fetcher.Form>
-      <p>Welcome {user}!</p>
-    </div>
+      <Box
+        sx={{
+          '@media (min-width: 1440px)': {
+            fontSize: '26px !important',
+          },
+          '@media (min-width: 1996px)': {
+            fontSize: '30px !important',
+          },
+        }}
+      >
+        Welcome {user}!
+      </Box>
+    </Box>
   );
 }

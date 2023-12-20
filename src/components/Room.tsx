@@ -4,13 +4,12 @@ import useWebSocket from 'react-use-websocket';
 import { getSocketURL } from '../config';
 import { useRoomData } from '../hooks/useRoomData';
 import type { ClientCommand, RoomType } from '../types';
-import { Characters } from './CharacterList';
+import { ActionButtonsRight } from './ActionButtonsRight';
 import { Consumables } from './Consumables';
-import { FightsList } from './Fights';
+import Controller from './Controller';
 import { ItemList } from './ItemList';
 import { MonsterList } from './MonsterList';
 import { PromptOutput } from './PromptOutput';
-import { QuestList } from './QuestList';
 
 export type RoomComponentProps = {
   roomData: RoomType;
@@ -27,22 +26,22 @@ export const RoomComponent = ({ roomData }: RoomComponentProps) => {
       </Box>
     );
   }
-
-  const backgroundImage = roomData.icon ? `url(images/${roomData.icon})` : 'none';
+  const backgroundImage = roomData.icon ? `url(src/assets/images/${roomData.icon})` : 'none';
 
   return (
     <Box
       sx={{
         position: 'relative',
-        padding: '20px',
+        padding: '10px 20px',
         width: '100%',
-        minHeight: '100vh',
+        height: '100%',
         display: 'flex', // Use flex layout to give more control over the child elements
-        flexDirection: 'column', // Stack children vertically
-        justifyContent: 'space-between',
+        // justifyContent: 'space-between',
         backgroundImage: backgroundImage,
         backgroundSize: 'cover',
         backgroundPosition: 'center center',
+        gap: '10px',
+        overflow: 'hidden',
         '&::before': {
           content: '""',
           position: 'absolute',
@@ -53,38 +52,139 @@ export const RoomComponent = ({ roomData }: RoomComponentProps) => {
           background: 'rgba(0, 0, 0, 0.4)',
           zIndex: -1,
         },
+        '@media (max-width: 768px)': {
+          padding: '10px',
+        },
       }}
     >
-      {/* This container will hold the prompt output and the room description side by side */}
-      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start' }}>
-        <PromptOutput />
-        <div style={{ flex: 1, paddingLeft: '20px' }}>
-          {' '}
-          {/* Add some space between the components */}
-          <Typography id="room-title" variant="h6" component="h4" align="left" color="white">
-            {roomData.title}
-          </Typography>
-          <Typography id="room-description" variant="body1" component="p" align="left" color="white">
-            {roomData.description}
-          </Typography>
-        </div>
-      </div>
-
-      {/* The rest of your code remains unchanged */}
-      <Grid container spacing={3}>
-        <Grid item xs={5}>
-          <MonsterList />
-          <Characters />
-          <FightsList />
-          <QuestList />
+      <Grid
+        sx={{
+          display: 'flex',
+          maxWidth: '74%',
+          width: '74%',
+          height: '85%',
+          gap: '10px',
+        }}
+      >
+        <Grid sx={{ maxWidth: '24%', width: '24%', height: '99%' }}>
+          <PromptOutput />
+          <Controller />
         </Grid>
-        <Grid item xs={5}>
-          <ItemList />
-          <Consumables />
+        <Grid sx={{ maxWidth: '74%', width: '74%' }}>
+          <div
+            style={{
+              padding: '10px',
+              marginBottom: '5px',
+              height: '85%',
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              border: '1px solid white',
+              overflow: 'auto',
+            }}
+          >
+            {' '}
+            <Typography
+              id="room-title"
+              variant="h6"
+              component="h4"
+              align="center"
+              color="white"
+              sx={{
+                '@media (min-width: 1440px)': {
+                  fontSize: '30px !important',
+                },
+                '@media (min-width: 1996px)': {
+                  fontSize: '34px !important',
+                },
+              }}
+            >
+              {roomData.title}
+            </Typography>
+            <Typography
+              id="room-description"
+              variant="body1"
+              component="p"
+              align="left"
+              color="white"
+              sx={{
+                '@media (min-width: 1440px)': {
+                  fontSize: '26px !important',
+                },
+                '@media (min-width: 1996px)': {
+                  fontSize: '30px !important',
+                },
+              }}
+            >
+              {roomData.description}
+            </Typography>
+          </div>
+          <MonsterList />
         </Grid>
       </Grid>
 
-      <div style={{ flexGrow: 1 }}></div>
+      <Grid
+        sx={{
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          maxWidth: '24%',
+          width: '24%',
+          height: '85%',
+        }}
+      >
+        <Grid
+          sx={{
+            position: 'relative',
+            padding: '8px',
+            width: '100%',
+            height: '49%',
+            overflow: 'auto',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            border: '1px solid white',
+            transitionDuration: '0.3s',
+            zIndex: '12',
+            '@media (max-height: 700px)': {
+              height: '25px',
+              padding: 0,
+              overflow: 'hidden',
+              '&:hover': {
+                width: '200%',
+                height: '80%',
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                transform: 'translateX(-50%)',
+              },
+            },
+          }}
+        >
+          <Box
+            color="white"
+            textAlign="center"
+            sx={{
+              '@media (min-width: 1440px)': {
+                fontSize: '26px !important',
+              },
+              '@media (min-width: 1996px)': {
+                fontSize: '30px !important',
+              },
+            }}
+          >
+            Item List
+          </Box>
+          <ItemList />
+          <Consumables />
+        </Grid>
+        <Grid
+          sx={{
+            position: 'absolute',
+            bottom: '0',
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+          }}
+        >
+          <ActionButtonsRight />
+        </Grid>
+      </Grid>
     </Box>
   );
 };

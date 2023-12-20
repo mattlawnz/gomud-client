@@ -33,7 +33,7 @@ function Layout() {
   return (
     <div
       style={{
-        backgroundImage: 'url(/images/splash.png)',
+        backgroundImage: 'url(/assets/images/splash.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         height: '100vh',

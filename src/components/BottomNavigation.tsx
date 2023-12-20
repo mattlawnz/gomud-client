@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { createContext, useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
@@ -77,7 +77,20 @@ export const MyBottomNavigation = () => {
     .filter((skillName) => skills[skillName].isAvailable)
     .map((skillName) => {
       return (
-        <Button key={skillName} variant="contained" color="primary" onClick={() => handleSkillClick(skillName)}>
+        <Button
+          key={skillName}
+          variant="contained"
+          color="primary"
+          sx={{
+            '@media (min-width: 1440px)': {
+              fontSize: '26px !important',
+            },
+            '@media (min-width: 1996px)': {
+              fontSize: '30px !important',
+            },
+          }}
+          onClick={() => handleSkillClick(skillName)}
+        >
           {skills[skillName].buttonText}
         </Button>
       );
@@ -102,7 +115,17 @@ export const MyBottomNavigation = () => {
   // };
 
   return (
-    <div style={{ position: 'fixed', bottom: 0, width: '100%', background: '#ccc' }}>
+    <Box
+      sx={{
+        width: '100%',
+        '@media (min-width: 1440px)': {
+          fontSize: '26px !important',
+        },
+        '@media (min-width: 1996px)': {
+          fontSize: '30px !important',
+        },
+      }}
+    >
       {skillButtons}
       {showMonsters &&
         selectedSkill &&
@@ -118,8 +141,8 @@ export const MyBottomNavigation = () => {
             </Button>
           ))
         ) : (
-          <div>No targets available.</div>
+          <div style={{ color: 'white' }}>No targets available.</div>
         ))}
-    </div>
+    </Box>
   );
 };

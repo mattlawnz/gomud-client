@@ -2,7 +2,8 @@
   "name": "app",
   "private": true,
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host 0.0.0.0",
+    "proxymud": "vite --host 0.0.0.0 --mode proxymud",
     "test": "jest",
     "build": "tsc && vite build",
     "serve": "vite preview",

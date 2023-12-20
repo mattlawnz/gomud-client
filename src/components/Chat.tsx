@@ -25,7 +25,7 @@ export const ChatWindow = () => {
       return ['chatText', 'chatItem', 'chatMonster'].includes(serverResponse.type);
     },
   });
-
+  console.log(lastJsonMessage);
   useEffect(() => {
     if (lastJsonMessage) {
       setChatMessages((prevMessages) => [...prevMessages, lastJsonMessage as ServerResponse]);
@@ -44,7 +44,6 @@ export const ChatWindow = () => {
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen);
   };
-
   return (
     <div>
       {/* Chat toggle button */}

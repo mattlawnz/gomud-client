@@ -46,7 +46,10 @@ export const GroupMembers = () => {
               <Avatar
                 src={groupData.leaderPortrait}
                 alt={`${groupData.leaderName}'s portrait`}
-                sx={{ width: 100, height: 100 }}
+                sx={{
+                  width: 100,
+                  height: 100,
+                }}
               />
             </LeaderBadge>
             <Typography variant="body2">{`${groupData.leaderName} (Leader)`}</Typography>

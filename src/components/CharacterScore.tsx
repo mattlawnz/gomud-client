@@ -5,7 +5,18 @@ type ScoreComponentProps = {
 };
 
 export const ScoreComponent = (props: ScoreComponentProps) => {
-  const score = JSON.parse(props.serverResponse.message) as Score;
+  // Check if the server response and message field are defined and valid
+  if (!props.serverResponse || typeof props.serverResponse.message !== 'string') {
+    return <div>Loading score information...</div>;
+  }
+  // const score = JSON.parse(props.serverResponse.message) as Score;
+  let score;
+  try {
+    score = JSON.parse(props.serverResponse.message) as Score;
+  } catch (e) {
+    console.error('Error parsing score JSON:', e);
+    return <div>Error loading score information.</div>;
+  }
 
   return (
     <div style={{ textAlign: 'left', fontSize: '16px' }}>

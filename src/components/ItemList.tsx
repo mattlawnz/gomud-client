@@ -51,13 +51,14 @@ export const ItemList = () => {
   };
 
   return (
-    <div style={{ textAlign: 'left' }}>
+    <div style={{ textAlign: 'left', display: 'flex', flexWrap: 'wrap' }}>
       {items &&
         items.map((item, idx) => (
           <ButtonGroup
             key={idx}
             variant="text"
             size="small"
+            orientation="vertical"
             style={{ justifyContent: 'flex-start', display: 'block', marginBottom: '10px' }}
           >
             <Button
@@ -72,7 +73,7 @@ export const ItemList = () => {
                   onClick={() => handleLook(item)}
                   sx={{
                     '@media (min-width: 1440px)': {
-                      fontSize: '26px !important',
+                      fontSize: '18px !important',
                     },
                     '@media (min-width: 1996px)': {
                       fontSize: '30px !important',
@@ -85,7 +86,7 @@ export const ItemList = () => {
                   onClick={() => handleGet(item)}
                   sx={{
                     '@media (min-width: 1440px)': {
-                      fontSize: '26px !important',
+                      fontSize: '18px !important',
                     },
                     '@media (min-width: 1996px)': {
                       fontSize: '30px !important',
@@ -98,7 +99,7 @@ export const ItemList = () => {
                   onClick={() => itemToChat(item)}
                   sx={{
                     '@media (min-width: 1440px)': {
-                      fontSize: '26px !important',
+                      fontSize: '18px !important',
                     },
                     '@media (min-width: 1996px)': {
                       fontSize: '30px !important',

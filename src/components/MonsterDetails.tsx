@@ -1,16 +1,14 @@
 import { Avatar, Divider, Grid, Typography } from '@mui/material';
 
-import type { MonsterDetail, ServerResponse } from '../types';
+import type { MonsterDetail } from '../types';
 
 type MonsterDetailProps = {
-  serverResponse: ServerResponse;
+  monsterDetail: MonsterDetail;
 };
 
-export const MonsterDetailComponent = (props: MonsterDetailProps) => {
-  const monsterDetail = props.serverResponse as unknown as MonsterDetail;
-
+export const MonsterDetailComponent = ({ monsterDetail }: MonsterDetailProps) => {
   if (!monsterDetail) {
-    return null;
+    return <div>No monster details available.</div>;
   }
 
   let borderColor = 'transparent'; // Default

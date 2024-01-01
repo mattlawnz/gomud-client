@@ -1,25 +1,44 @@
-import { Button, ButtonGroup } from '@mui/material';
+import { Button, ButtonGroup, Dialog, DialogTitle } from '@mui/material';
 import { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
 import { getSocketURL } from '../config';
-import type { ClientCommand, MonstersInRoomResponse, MonsterType, ServerResponse } from '../types';
+import type { ClientCommand, MonsterDetail, MonstersInRoomResponse, MonsterType, ServerResponse } from '../types';
+import { MonsterDetailComponent } from './MonsterDetails';
 
 export const MonsterList = () => {
-  const [activeMonsterId, setActiveMonsterId] = useState<number | null>(null);
   const [monsters, setMonsters] = useState<MonsterType[]>([]);
+  const [serverResponse, setServerResponse] = useState<ServerResponse | null>(null);
+  const [openLookDialog, setOpenLookDialog] = useState(false);
+  const [activeMonsterId, setActiveMonsterId] = useState<number | null>(null);
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(getSocketURL(), {
     share: true,
-    filter(message: WebSocketEventMap['message']) {
-      const serverResponse = JSON.parse(message.data) as ServerResponse;
-      return serverResponse.type === 'monstersinroom';
+    onMessage: (message) => {
+      const response = JSON.parse(message.data) as ServerResponse;
+      console.log('WebSocket message:', response); // Debugging log
+      setServerResponse(response);
+
+      if (response.type === 'monsterDetails') {
+        setOpenLookDialog(true);
+      }
     },
   });
 
+  const handleLookButtonClick = (monsterId: number) => {
+    const messageForServer: ClientCommand = {
+      type: 'command',
+      command: `mlook ${monsterId}`,
+    };
+    sendJsonMessage(messageForServer);
+    setOpenLookDialog(true); // Open the dialog
+  };
+
   useEffect(() => {
-    if (lastJsonMessage !== null) {
-      const monstersInRoomResponse = lastJsonMessage as MonstersInRoomResponse;
-      setMonsters(monstersInRoomResponse.monsterDescriptions);
+    console.log('Last JSON message:', lastJsonMessage); // Debugging log
+    if (lastJsonMessage) {
+      const monstersResponse = lastJsonMessage as MonstersInRoomResponse;
+      console.log('Monsters in room:', monstersResponse.monsterDescriptions); // Debugging log
+      setMonsters(monstersResponse.monsterDescriptions);
     }
   }, [lastJsonMessage]);
 
@@ -30,8 +49,19 @@ export const MonsterList = () => {
     }
   }, [lastJsonMessage]);
 
+  let monsterDetail: MonsterDetail | null = null;
+  if (serverResponse && serverResponse.type === 'monsterDetails') {
+    try {
+      monsterDetail = JSON.parse(serverResponse.message) as MonsterDetail;
+    } catch (error) {
+      console.error('Error parsing monster details:', error);
+      monsterDetail = null;
+    }
+  }
+
   return (
-    <div style={{ height: '14%', textAlign: 'left', border: '1px solid white', background: 'rgba(0, 0, 0, 0.5)' }}>
+    // <div style={{ height: '14%', textAlign: 'left', border: '1px solid white', background: 'rgba(0, 0, 0, 0.5)' }}>
+    <div>
       {' '}
       {/* Apply left alignment here */}
       {monsters &&
@@ -50,16 +80,9 @@ export const MonsterList = () => {
             </Button>
             {activeMonsterId === monster.monsterInstanceID && (
               <>
-                <Button
-                  onClick={() => {
-                    const messageForServer: ClientCommand = {
-                      type: 'command',
-                      command: `mlook ${monster.monsterInstanceID}`,
-                    };
-                    sendJsonMessage(messageForServer);
-                    setActiveMonsterId(null); // Hide the additional buttons after clicking
-                  }}
-                >
+                <Button onClick={() => handleLookButtonClick(monster.monsterInstanceID)}>
+                  {' '}
+                  {/* Updated this line */}
                   Look
                 </Button>
                 <Button
@@ -90,6 +113,12 @@ export const MonsterList = () => {
             )}
           </ButtonGroup>
         ))}
+      {/* Dialog for displaying monster details */}
+      {/* Dialog for displaying monster details */}
+      <Dialog open={openLookDialog} onClose={() => setOpenLookDialog(false)}>
+        <DialogTitle id="look-dialog-title">Monster Details</DialogTitle>
+        {monsterDetail && <MonsterDetailComponent monsterDetail={monsterDetail} />}
+      </Dialog>
     </div>
   );
 };

@@ -8,20 +8,32 @@ import { MonsterDetailComponent } from './MonsterDetails';
 
 export const MonsterList = () => {
   const [monsters, setMonsters] = useState<MonsterType[]>([]);
-  const [serverResponse, setServerResponse] = useState<ServerResponse | null>(null);
+  const [monsterDetail, setMonsterDetail] = useState<MonsterDetail>();
+  // const [serverResponse, setServerResponse] = useState<ServerResponse | null>(null);
   const [openLookDialog, setOpenLookDialog] = useState(false);
   const [activeMonsterId, setActiveMonsterId] = useState<number | null>(null);
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(getSocketURL(), {
     share: true,
-    onMessage: (message) => {
-      const response = JSON.parse(message.data) as ServerResponse;
-      console.log('WebSocket message:', response); // Debugging log
-      setServerResponse(response);
+    filter(message: WebSocketEventMap['message']) {
+      const serverResponse = JSON.parse(message.data) as ServerResponse;
 
-      if (response.type === 'monsterDetails') {
-        setOpenLookDialog(true);
-      }
+      // this component will accept all messages of type 'monstersinroom' or 'monsterDetails'
+      return serverResponse.type === 'monstersinroom' || serverResponse.type === 'monsterDetails';
     },
+    // onMessage: (message: WebSocketEventMap['message']) => {
+    //   const response = JSON.parse(message.data) as ServerResponse;
+    //   console.log('WebSocket message:', response); // Debugging log
+
+    //   if (response.type === 'monstersinroom' || response.type === 'monsterDetails') {
+    //     setServerResponse(response);
+    //   }
+    //   // if (response.type === 'monstersinroom') {
+    //   //   const monstersInRoomResponse = lastJsonMessage as MonstersInRoomResponse;
+    //   //   setMonsters(monstersInRoomResponse.monsterDescriptions);
+    //   // } else if (response.type === 'monsterDetails') {
+    //   //   setOpenLookDialog(true);
+    //   // }
+    // },
   });
 
   const handleLookButtonClick = (monsterId: number) => {
@@ -34,30 +46,45 @@ export const MonsterList = () => {
   };
 
   useEffect(() => {
-    console.log('Last JSON message:', lastJsonMessage); // Debugging log
     if (lastJsonMessage) {
-      const monstersResponse = lastJsonMessage as MonstersInRoomResponse;
-      console.log('Monsters in room:', monstersResponse.monsterDescriptions); // Debugging log
-      setMonsters(monstersResponse.monsterDescriptions);
+      // determine what type we have received so we can do parse to different type and update state accordingly
+      const serverResponse = lastJsonMessage as ServerResponse;
+      // for type 'monstersinroom', we need to show a list of monsters
+      if (serverResponse.type === 'monstersinroom') {
+        const monstersResponse = lastJsonMessage as MonstersInRoomResponse;
+        console.log('Monsters in room:', monstersResponse.monsterDescriptions); // Debugging log
+        setMonsters(monstersResponse.monsterDescriptions);
+      }
+      // for type 'monsterDetails', we need to show a dialog with monster details
+      else if (serverResponse.type === 'monsterDetails') {
+        try {
+          const details = JSON.parse(serverResponse.message) as MonsterDetail;
+          setMonsterDetail(details);
+          setOpenLookDialog(true);
+        } catch (error) {
+          console.error('Error parsing monster details:', error);
+          //TODO: Do something useful here, like show an error message to the user instead of writing to console only
+        }
+      }
     }
   }, [lastJsonMessage]);
 
-  //log the last message from the server
-  useEffect(() => {
-    if (lastJsonMessage) {
-      // console.log('received message from server: ', lastJsonMessage);
-    }
-  }, [lastJsonMessage]);
+  // //log the last message from the server
+  // useEffect(() => {
+  //   if (lastJsonMessage) {
+  //     // console.log('received message from server: ', lastJsonMessage);
+  //   }
+  // }, [lastJsonMessage]);
 
-  let monsterDetail: MonsterDetail | null = null;
-  if (serverResponse && serverResponse.type === 'monsterDetails') {
-    try {
-      monsterDetail = JSON.parse(serverResponse.message) as MonsterDetail;
-    } catch (error) {
-      console.error('Error parsing monster details:', error);
-      monsterDetail = null;
-    }
-  }
+  // let monsterDetail: MonsterDetail | null = null;
+  // if (serverResponse && serverResponse.type === 'monsterDetails') {
+  //   try {
+  //     monsterDetail = JSON.parse(serverResponse.message) as MonsterDetail;
+  //   } catch (error) {
+  //     console.error('Error parsing monster details:', error);
+  //     monsterDetail = null;
+  //   }
+  // }
 
   return (
     // <div style={{ height: '14%', textAlign: 'left', border: '1px solid white', background: 'rgba(0, 0, 0, 0.5)' }}>

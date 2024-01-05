@@ -1,4 +1,5 @@
 import { Box, Grid, Typography } from '@mui/material';
+import React, { useEffect } from 'react';
 import useWebSocket from 'react-use-websocket';
 
 import { getSocketURL } from '../config';
@@ -16,7 +17,7 @@ export type RoomComponentProps = {
   sendCommand: (_command: string) => void;
 };
 
-export const RoomComponent = ({ roomData }: RoomComponentProps) => {
+export const RoomComponent = ({ roomData, sendCommand }: RoomComponentProps) => {
   if (!roomData || !roomData.type) {
     return (
       <Box>
@@ -142,7 +143,6 @@ export const RoomComponent = ({ roomData }: RoomComponentProps) => {
           </Grid>
         </Grid>
       </Grid>
-
       {/* The rightmost grid, containing the item list, consumables, and action buttons */}
       <Grid
         sx={{
@@ -211,6 +211,7 @@ export const RoomComponent = ({ roomData }: RoomComponentProps) => {
           <ActionButtonsRight />
         </Grid>
       </Grid>
+      <DummyLookCommandComponent sendCommand={sendCommand} />;
     </Box>
   );
 };
@@ -235,4 +236,23 @@ export const RoomView = () => {
 
   // Render the RoomComponent with the fetched room data and sendCommand function
   return <RoomComponent roomData={roomData} sendCommand={sendCommand} />;
+};
+
+export type DummyLookCommandComponentProps = {
+  sendCommand: (_command: string) => void;
+};
+/**
+ * This is a dummy component to call the `look` command again. The issue is that sometimes the components
+ * take time to load and we have already received the data e.g. `monstersinroom` via the websocket. This just
+ * makes another call to `look` command to get room data and update. Note that this is only really needed
+ * during the load of first room. It could be that it may be needed when we switch to `fight` view and then
+ * back to `room` view.
+ */
+export const DummyLookCommandComponent = ({ sendCommand }: DummyLookCommandComponentProps) => {
+  // Disable the eslint warning for the dependency array here as we only want to run this once
+  // when the component is first mounted so dependencies need to be empty array []
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => sendCommand('look'), []);
+
+  return <React.Fragment></React.Fragment>;
 };

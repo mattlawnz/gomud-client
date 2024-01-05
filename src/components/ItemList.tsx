@@ -1,12 +1,14 @@
-import { Button, ButtonGroup } from '@mui/material';
+import { Button, ButtonGroup, Dialog, DialogTitle } from '@mui/material';
 import { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
 import { getSocketURL } from '../config';
 import type { ClientCommand, ItemsInRoomResponse, ItemType, ServerResponse } from '../types';
+import { ItemDetailsComponent } from './ItemDetails';
 
 export const ItemList = () => {
   const [items, setItems] = useState<ItemType[]>([]);
+  const [openLookDialog, setOpenLookDialog] = useState(false);
   const [activeItemId, setActiveItemId] = useState<number | null>(null);
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(getSocketURL(), {
     share: true,
@@ -23,13 +25,9 @@ export const ItemList = () => {
     }
   }, [lastJsonMessage]);
 
-  const handleLook = (item: ItemType) => {
-    const messageForServer: ClientCommand = {
-      type: 'command',
-      command: `ilook ${item.itemInstanceID}`,
-    };
-    sendJsonMessage(messageForServer);
-    setActiveItemId(null);
+  const handleLook = (itemId: number) => {
+    setActiveItemId(itemId); // Set the active item ID
+    setOpenLookDialog(true); // Open the dialog
   };
 
   const handleGet = (item: ItemType) => {
@@ -70,7 +68,7 @@ export const ItemList = () => {
             {activeItemId === item.itemInstanceID && (
               <>
                 <Button
-                  onClick={() => handleLook(item)}
+                  onClick={() => handleLook(item.itemInstanceID)}
                   sx={{
                     '@media (min-width: 1440px)': {
                       fontSize: '18px !important',
@@ -112,6 +110,10 @@ export const ItemList = () => {
             )}
           </ButtonGroup>
         ))}
+      <Dialog open={openLookDialog} onClose={() => setOpenLookDialog(false)}>
+        <DialogTitle id="look-dialog-title">Item Details</DialogTitle>
+        <ItemDetailsComponent itemId={activeItemId} sendJsonMessage={sendJsonMessage} />
+      </Dialog>
     </div>
   );
 };

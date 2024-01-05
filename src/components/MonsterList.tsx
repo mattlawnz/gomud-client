@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
 import { getSocketURL } from '../config';
-import type { ClientCommand, MonsterDetail, MonstersInRoomResponse, MonsterType, ServerResponse } from '../types';
+import type { ClientCommand, MonstersInRoomResponse, MonsterType, ServerResponse } from '../types';
 import { MonsterDetailComponent } from './MonsterDetails';
 
 export const MonsterList = () => {
   const [monsters, setMonsters] = useState<MonsterType[]>([]);
-  const [monsterDetail, setMonsterDetail] = useState<MonsterDetail>();
+  // const [monsterDetail, setMonsterDetail] = useState<MonsterDetail>();
   // const [serverResponse, setServerResponse] = useState<ServerResponse | null>(null);
   const [openLookDialog, setOpenLookDialog] = useState(false);
   const [activeMonsterId, setActiveMonsterId] = useState<number | null>(null);
@@ -20,28 +20,10 @@ export const MonsterList = () => {
       // this component will accept all messages of type 'monstersinroom' or 'monsterDetails'
       return serverResponse.type === 'monstersinroom' || serverResponse.type === 'monsterDetails';
     },
-    // onMessage: (message: WebSocketEventMap['message']) => {
-    //   const response = JSON.parse(message.data) as ServerResponse;
-    //   console.log('WebSocket message:', response); // Debugging log
-
-    //   if (response.type === 'monstersinroom' || response.type === 'monsterDetails') {
-    //     setServerResponse(response);
-    //   }
-    //   // if (response.type === 'monstersinroom') {
-    //   //   const monstersInRoomResponse = lastJsonMessage as MonstersInRoomResponse;
-    //   //   setMonsters(monstersInRoomResponse.monsterDescriptions);
-    //   // } else if (response.type === 'monsterDetails') {
-    //   //   setOpenLookDialog(true);
-    //   // }
-    // },
   });
 
   const handleLookButtonClick = (monsterId: number) => {
-    const messageForServer: ClientCommand = {
-      type: 'command',
-      command: `mlook ${monsterId}`,
-    };
-    sendJsonMessage(messageForServer);
+    setActiveMonsterId(monsterId); // Set the active monster ID
     setOpenLookDialog(true); // Open the dialog
   };
 
@@ -56,35 +38,18 @@ export const MonsterList = () => {
         setMonsters(monstersResponse.monsterDescriptions);
       }
       // for type 'monsterDetails', we need to show a dialog with monster details
-      else if (serverResponse.type === 'monsterDetails') {
-        try {
-          const details = JSON.parse(serverResponse.message) as MonsterDetail;
-          setMonsterDetail(details);
-          setOpenLookDialog(true);
-        } catch (error) {
-          console.error('Error parsing monster details:', error);
-          //TODO: Do something useful here, like show an error message to the user instead of writing to console only
-        }
-      }
+      // else if (serverResponse.type === 'monsterDetails') {
+      //   try {
+      //     const details = JSON.parse(serverResponse.message) as MonsterDetail;
+      //     setMonsterDetail(details);
+      //     setOpenLookDialog(true);
+      //   } catch (error) {
+      //     console.error('Error parsing monster details:', error);
+      //     //TODO: Do something useful here, like show an error message to the user instead of writing to console only
+      //   }
+      // }
     }
   }, [lastJsonMessage]);
-
-  // //log the last message from the server
-  // useEffect(() => {
-  //   if (lastJsonMessage) {
-  //     // console.log('received message from server: ', lastJsonMessage);
-  //   }
-  // }, [lastJsonMessage]);
-
-  // let monsterDetail: MonsterDetail | null = null;
-  // if (serverResponse && serverResponse.type === 'monsterDetails') {
-  //   try {
-  //     monsterDetail = JSON.parse(serverResponse.message) as MonsterDetail;
-  //   } catch (error) {
-  //     console.error('Error parsing monster details:', error);
-  //     monsterDetail = null;
-  //   }
-  // }
 
   return (
     // <div style={{ height: '14%', textAlign: 'left', border: '1px solid white', background: 'rgba(0, 0, 0, 0.5)' }}>
@@ -141,10 +106,9 @@ export const MonsterList = () => {
           </ButtonGroup>
         ))}
       {/* Dialog for displaying monster details */}
-      {/* Dialog for displaying monster details */}
       <Dialog open={openLookDialog} onClose={() => setOpenLookDialog(false)}>
         <DialogTitle id="look-dialog-title">Monster Details</DialogTitle>
-        {monsterDetail && <MonsterDetailComponent monsterDetail={monsterDetail} />}
+        <MonsterDetailComponent monsterId={activeMonsterId} sendJsonMessage={sendJsonMessage} />
       </Dialog>
     </div>
   );

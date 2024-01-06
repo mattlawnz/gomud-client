@@ -4,11 +4,18 @@ import useWebSocket from 'react-use-websocket';
 
 import { getSocketURL } from '../config';
 import type { ClientCommand, ServerResponse } from '../types';
+import { ScoreComponent } from './CharacterScore';
 import { CustomStyledItem } from './CustomStyledItem';
+import { EquipmentComponent } from './Equipment';
+import { InventoryComponent } from './Inventory';
 import { SkillTreeComponent } from './SkillTree';
 
 export const ActionButtons = () => {
   const [openPracticeDialog, setOpenPracticeDialog] = useState(false);
+  const [openScoreDialog, setOpenScoreDialog] = useState(false); // New state for score dialog
+  const [openEquipmentDialog, setOpenEquipmentDialog] = useState(false); // New state for equipment dialog
+  const [openInventoryDialog, setOpenInventoryDialog] = useState(false); // New state for inventory dialog
+  const [openRecallDialog, setOpenRecallDialog] = useState(false); // New state for recall dialog
   const [serverResponse, setServerResponse] = useState<ServerResponse>();
   const { sendJsonMessage } = useWebSocket(getSocketURL(), {
     share: true,
@@ -42,6 +49,40 @@ export const ActionButtons = () => {
   const handleClosePracticeDialog = () => {
     setOpenPracticeDialog(false);
   };
+
+  const handleScoreButtonClick = () => {
+    sendCommand('score');
+    setOpenScoreDialog(true); // Open the score dialog
+  };
+  const handleCloseScoreDialog = () => {
+    setOpenScoreDialog(false); // Close the score dialog
+  };
+
+  const handleEquipmentButtonClick = () => {
+    sendCommand('equipment');
+    setOpenEquipmentDialog(true); // Open the equipment dialog
+  };
+  const handleCloseEquipmentDialog = () => {
+    setOpenEquipmentDialog(false); // Close the equipment dialog
+  };
+
+  const handleInventoryButtonClick = () => {
+    sendCommand('inventory');
+    setOpenInventoryDialog(true); // Open the inventory dialog
+  };
+  const handleCloseInventoryDialog = () => {
+    setOpenInventoryDialog(false); // Close the inventory dialog
+  };
+
+  const handleRecallButtonClick = () => {
+    sendCommand('recall');
+    setOpenRecallDialog(true); // Open the recall dialog
+  };
+
+  const handleCloseRecallDialog = () => {
+    setOpenRecallDialog(false); // Close the recall dialog
+  };
+
   return (
     <React.Fragment>
       <Grid container spacing={2} justifyContent="center" alignItems="center">
@@ -59,7 +100,7 @@ export const ActionButtons = () => {
                   fontSize: '30px !important',
                 },
               }}
-              onClick={() => sendCommand('inventory')}
+              onClick={handleInventoryButtonClick}
             >
               Inventory
             </Button>
@@ -74,7 +115,7 @@ export const ActionButtons = () => {
                   fontSize: '30px !important',
                 },
               }}
-              onClick={() => sendCommand('equipment')}
+              onClick={handleEquipmentButtonClick}
             >
               Equipment
             </Button>
@@ -104,7 +145,8 @@ export const ActionButtons = () => {
                   fontSize: '30px !important',
                 },
               }}
-              onClick={() => sendCommand('score')}
+              // onClick={() => sendCommand('score')}
+              onClick={handleScoreButtonClick} // Updated onClick handler for score button
             >
               Score
             </Button>
@@ -134,7 +176,8 @@ export const ActionButtons = () => {
                   fontSize: '30px !important',
                 },
               }}
-              onClick={() => sendCommand('recall')}
+              // onClick={() => sendCommand('recall')}
+              onClick={handleRecallButtonClick}
             >
               RECALL
             </Button>
@@ -158,6 +201,38 @@ export const ActionButtons = () => {
         <Dialog open={openPracticeDialog} onClose={handleClosePracticeDialog} aria-labelledby="practice-dialog-title">
           <DialogTitle id="practice-dialog-title">Skill Tree</DialogTitle>
           {serverResponse && <SkillTreeComponent serverResponse={serverResponse} />}
+        </Dialog>
+        {/* Dialog for Score */}
+        <Dialog open={openScoreDialog} onClose={handleCloseScoreDialog} aria-labelledby="score-dialog-title">
+          <DialogTitle id="score-dialog-title">Score Information</DialogTitle>
+          {serverResponse && serverResponse.type === 'score' && <ScoreComponent serverResponse={serverResponse} />}
+        </Dialog>
+        {/* Dialog for Equipment */}
+        <Dialog
+          open={openEquipmentDialog}
+          onClose={handleCloseEquipmentDialog}
+          aria-labelledby="equipment-dialog-title"
+        >
+          <DialogTitle id="equipment-dialog-title">Equipment Information</DialogTitle>
+          {serverResponse && serverResponse.type === 'equipment' && (
+            <EquipmentComponent serverResponse={serverResponse} />
+          )}
+        </Dialog>
+        {/* Dialog for Inventory */}
+        <Dialog
+          open={openInventoryDialog}
+          onClose={handleCloseInventoryDialog}
+          aria-labelledby="inventory-dialog-title"
+        >
+          <DialogTitle id="inventory-dialog-title">Inventory Information</DialogTitle>
+          {serverResponse && serverResponse.type === 'inventory' && (
+            <InventoryComponent serverResponse={serverResponse} />
+          )}
+        </Dialog>
+        {/* Dialog for Recall */}
+        <Dialog open={openRecallDialog} onClose={handleCloseRecallDialog} aria-labelledby="recall-dialog-title">
+          <DialogTitle id="recall-dialog-title">Recall</DialogTitle>
+          <div style={{ padding: '20px' }}>You return to your starting position</div>
         </Dialog>
       </Grid>
     </React.Fragment>

@@ -1,4 +1,5 @@
 import { Box, Grid, Typography } from '@mui/material';
+import React, { useEffect } from 'react';
 import useWebSocket from 'react-use-websocket';
 
 import { getSocketURL } from '../config';
@@ -16,7 +17,7 @@ export type RoomComponentProps = {
   sendCommand: (_command: string) => void;
 };
 
-export const RoomComponent = ({ roomData }: RoomComponentProps) => {
+export const RoomComponent = ({ roomData, sendCommand }: RoomComponentProps) => {
   if (!roomData || !roomData.type) {
     return (
       <Box>
@@ -29,6 +30,7 @@ export const RoomComponent = ({ roomData }: RoomComponentProps) => {
   const backgroundImage = roomData.icon ? `url(src/assets/images/${roomData.icon})` : 'none';
 
   return (
+    // The outermost box, with the background image and overall styling
     <Box
       sx={{
         position: 'relative',
@@ -57,6 +59,7 @@ export const RoomComponent = ({ roomData }: RoomComponentProps) => {
         },
       }}
     >
+      {/* The main grid, containing the prompt output, controller, and monster list */}
       <Grid
         sx={{
           display: 'flex',
@@ -66,10 +69,13 @@ export const RoomComponent = ({ roomData }: RoomComponentProps) => {
           gap: '10px',
         }}
       >
+        {/* The left grid, containing the prompt output and controller */}
         <Grid sx={{ maxWidth: '24%', width: '24%', height: '99%' }}>
           <PromptOutput />
           <Controller />
         </Grid>
+
+        {/* The middle grid, containing the room title, description, and item list */}
         <Grid sx={{ maxWidth: '74%', width: '74%' }}>
           <div
             style={{
@@ -90,7 +96,7 @@ export const RoomComponent = ({ roomData }: RoomComponentProps) => {
               color="white"
               sx={{
                 '@media (min-width: 1440px)': {
-                  fontSize: '30px !important',
+                  fontSize: '18px !important',
                 },
                 '@media (min-width: 1996px)': {
                   fontSize: '34px !important',
@@ -107,20 +113,37 @@ export const RoomComponent = ({ roomData }: RoomComponentProps) => {
               color="white"
               sx={{
                 '@media (min-width: 1440px)': {
-                  fontSize: '26px !important',
+                  fontSize: '18px !important',
                 },
                 '@media (min-width: 1996px)': {
-                  fontSize: '30px !important',
+                  fontSize: '34px !important',
                 },
               }}
             >
               {roomData.description}
             </Typography>
           </div>
-          <MonsterList />
+          {/* The right grid, now including the monsterListStyle */}
+          <Grid>
+            {/* ... [previous code for this section] */}
+            <div
+              style={{
+                minHeight: '14%', // Ensure it always takes at least 14% of the height
+                maxHeight: '14%', // Prevent it from taking more than 14%
+                overflowY: 'auto', // Enable scrolling for overflow
+                textAlign: 'left',
+                border: '1px solid white',
+                background: 'rgba(0, 0, 0, 0.5)',
+              }}
+            >
+              {/* <MonsterList /> */}
+              <ItemList />
+              <Consumables />
+            </div>
+          </Grid>
         </Grid>
       </Grid>
-
+      {/* The rightmost grid, containing the item list, consumables, and action buttons */}
       <Grid
         sx={{
           position: 'relative',
@@ -132,6 +155,7 @@ export const RoomComponent = ({ roomData }: RoomComponentProps) => {
           height: '85%',
         }}
       >
+        {/* The top grid, containing the item list and consumables */}
         <Grid
           sx={{
             position: 'relative',
@@ -168,11 +192,13 @@ export const RoomComponent = ({ roomData }: RoomComponentProps) => {
               },
             }}
           >
-            Item List
+            Monsters:
           </Box>
-          <ItemList />
-          <Consumables />
+          <MonsterList />
+          {/* <ItemList />
+          <Consumables /> */}
         </Grid>
+        {/* The bottom grid, containing the action buttons */}
         <Grid
           sx={{
             position: 'absolute',
@@ -185,16 +211,21 @@ export const RoomComponent = ({ roomData }: RoomComponentProps) => {
           <ActionButtonsRight />
         </Grid>
       </Grid>
+      <DummyLookCommandComponent sendCommand={sendCommand} />;
     </Box>
   );
 };
 
+// The RoomView component fetches the room data and handles sending commands
 export const RoomView = () => {
+  // Fetch the room data
   const roomData = useRoomData();
+  // Establish a WebSocket connection
   const { sendJsonMessage } = useWebSocket(getSocketURL(), {
     share: true,
   });
 
+  // Function to send a command to the server
   const sendCommand = (commandValue: string) => {
     const messageForServer: ClientCommand = {
       type: 'command',
@@ -203,5 +234,25 @@ export const RoomView = () => {
     sendJsonMessage(messageForServer);
   };
 
+  // Render the RoomComponent with the fetched room data and sendCommand function
   return <RoomComponent roomData={roomData} sendCommand={sendCommand} />;
+};
+
+export type DummyLookCommandComponentProps = {
+  sendCommand: (_command: string) => void;
+};
+/**
+ * This is a dummy component to call the `look` command again. The issue is that sometimes the components
+ * take time to load and we have already received the data e.g. `monstersinroom` via the websocket. This just
+ * makes another call to `look` command to get room data and update. Note that this is only really needed
+ * during the load of first room. It could be that it may be needed when we switch to `fight` view and then
+ * back to `room` view.
+ */
+export const DummyLookCommandComponent = ({ sendCommand }: DummyLookCommandComponentProps) => {
+  // Disable the eslint warning for the dependency array here as we only want to run this once
+  // when the component is first mounted so dependencies need to be empty array []
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => sendCommand('look'), []);
+
+  return <React.Fragment></React.Fragment>;
 };

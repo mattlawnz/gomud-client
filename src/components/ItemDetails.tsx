@@ -1,37 +1,74 @@
-import type { ItemDetails, ServerResponse } from '../types';
+import { List, ListItem, ListItemText, Paper, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import useWebSocket from 'react-use-websocket';
+
+import { getSocketURL } from '../config';
+import type { ClientCommand, ItemDetails, ServerResponse } from '../types';
 
 type ItemDetailsProps = {
-  serverResponse: ServerResponse;
+  itemId: number | null;
+  // eslint-disable-next-line no-unused-vars
+  sendJsonMessage: (message: ClientCommand) => void;
 };
 
-export const ItemDetailsComponent = (props: ItemDetailsProps) => {
-  const itemDetails = props.serverResponse as unknown as ItemDetails;
+export const ItemDetailsComponent = ({ itemId }: ItemDetailsProps) => {
+  const [itemDetails, setItemDetails] = useState<ItemDetails | null>(null);
 
-  if (itemDetails) {
-    return (
-      <div>
-        {/* Check each property before rendering */}
-        {itemDetails.description && (
-          <span style={{ color: 'textSecondary', marginBottom: '10px' }}>{itemDetails.description}</span>
-        )}
-        {itemDetails.armorDetails && <div>Armor Details: {itemDetails.armorDetails}</div>}
-        {itemDetails.weaponDetails && <div>Weapon Details: {itemDetails.weaponDetails}</div>}
-        {itemDetails.level && <div>Level: {itemDetails.level}</div>}
-        {itemDetails.materials && itemDetails.materials.length > 0 && (
-          <div>Materials: {itemDetails.materials.join(', ')}</div>
-        )}
-        {itemDetails.color && <div style={{ color: itemDetails.color }}>Rarity: {itemDetails.rarity}</div>}
-        {itemDetails.score !== undefined && <div>Score: {itemDetails.score}</div>}
+  const { sendJsonMessage, lastJsonMessage } = useWebSocket(getSocketURL(), {
+    share: true,
+    filter(message: WebSocketEventMap['message']) {
+      const serverResponse = JSON.parse(message.data) as ServerResponse;
+      return serverResponse.type === 'itemDetails';
+    },
+  });
 
-        <strong>Attributes:</strong>
-        {itemDetails.attributeModifiers &&
-          Object.entries(itemDetails.attributeModifiers).map(([key, value]) => (
-            <div key={key}>
-              {key}: {value}
-            </div>
-          ))}
-      </div>
-    );
+  useEffect(() => {
+    if (lastJsonMessage) {
+      const detail = lastJsonMessage as ItemDetails;
+      setItemDetails(detail);
+    }
+  }, [lastJsonMessage]);
+
+  useEffect(() => {
+    if (itemId !== null) {
+      const messageForServer: ClientCommand = {
+        type: 'command',
+        command: `ilook ${itemId}`,
+      };
+      sendJsonMessage(messageForServer);
+    }
+  }, [itemId, sendJsonMessage]);
+
+  if (!itemDetails) {
+    return <Typography>No item details available.</Typography>;
   }
-  return null; // Return null or a placeholder component if itemDetails is not defined
+
+  const formatAttribute = (value: number) => (value >= 0 ? `+${value}` : `${value}`);
+
+  return (
+    <Paper style={{ padding: '20px', backgroundColor: 'rgba(0, 0, 0, 0.7)', color: 'white' }}>
+      {/* <Typography variant="h6" gutterBottom>
+        Item Details
+      </Typography> */}
+      {/* <Divider style={{ marginBottom: '10px' }} /> */}
+      <Typography>{itemDetails.description}</Typography>
+      {itemDetails.weaponDetails && <Typography>Weapon Details: {itemDetails.weaponDetails}</Typography>}
+      {itemDetails.level && <Typography>Level: {itemDetails.level}</Typography>}
+      {itemDetails.materials && itemDetails.materials.length > 0 && (
+        <Typography>Materials: {itemDetails.materials.join(', ')}</Typography>
+      )}
+      {itemDetails.rarity && <Typography style={{ color: itemDetails.color }}>Rarity: {itemDetails.rarity}</Typography>}
+      {itemDetails.score !== undefined && <Typography>Score: {itemDetails.score}</Typography>}
+      <Typography variant="subtitle1">Attributes:</Typography>
+      {itemDetails.attributeModifiers && (
+        <List dense>
+          {Object.entries(itemDetails.attributeModifiers).map(([key, value]) => (
+            <ListItem key={key}>
+              <ListItemText primary={`${key}: ${formatAttribute(value)}`} />
+            </ListItem>
+          ))}
+        </List>
+      )}
+    </Paper>
+  );
 };

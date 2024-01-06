@@ -1,16 +1,47 @@
-import { Avatar, Divider, Grid, Typography } from '@mui/material';
+import { Avatar, Divider, Grid, List, ListItem, ListItemText, Paper, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import useWebSocket from 'react-use-websocket';
+import type { ClientCommand, MonsterDetail, ServerResponse } from 'src/types';
 
-import type { MonsterDetail, ServerResponse } from '../types';
+import { getSocketURL } from '../config';
 
 type MonsterDetailProps = {
-  serverResponse: ServerResponse;
+  monsterId: number | null;
+  // eslint-disable-next-line no-unused-vars
+  sendJsonMessage: (message: ClientCommand) => void;
 };
 
-export const MonsterDetailComponent = (props: MonsterDetailProps) => {
-  const monsterDetail = props.serverResponse as unknown as MonsterDetail;
+export const MonsterDetailComponent = ({ monsterId }: MonsterDetailProps) => {
+  const [monsterDetail, setMonsterDetail] = useState<MonsterDetail | null>(null);
+
+  const { sendJsonMessage, lastJsonMessage } = useWebSocket(getSocketURL(), {
+    share: true,
+    filter(message: WebSocketEventMap['message']) {
+      const serverResponse = JSON.parse(message.data) as ServerResponse;
+      return serverResponse.type === 'monsterDetails';
+    },
+  });
+
+  useEffect(() => {
+    if (lastJsonMessage) {
+      // Assert the type of lastJsonMessage to MonsterDetail
+      const detail = lastJsonMessage as MonsterDetail;
+      setMonsterDetail(detail);
+    }
+  }, [lastJsonMessage]);
+
+  useEffect(() => {
+    if (monsterId !== null) {
+      const messageForServer: ClientCommand = {
+        type: 'command',
+        command: `mlook ${monsterId}`,
+      };
+      sendJsonMessage(messageForServer);
+    }
+  }, [monsterId, sendJsonMessage]);
 
   if (!monsterDetail) {
-    return null;
+    return <div>No monster details available.</div>;
   }
 
   let borderColor = 'transparent'; // Default
@@ -18,53 +49,71 @@ export const MonsterDetailComponent = (props: MonsterDetailProps) => {
   else if (monsterDetail.levelDiff >= 3 && monsterDetail.levelDiff <= 5) borderColor = 'yellow';
   else if (monsterDetail.levelDiff >= 8) borderColor = 'red';
 
+  // function renderListItems(equipment: string[], arg1: string): import('react').ReactNode {
+  //   throw new Error('Function not implemented.');
+  // }
+  // Define a helper function to list items
+  const renderListItems = (items: string[] | null, emptyText: string) => (
+    <List dense>
+      {items && items.length > 0 ? (
+        items.map((item, idx) => (
+          <ListItem key={idx}>
+            <ListItemText primary={item} />
+          </ListItem>
+        ))
+      ) : (
+        <ListItem>
+          <ListItemText primary={emptyText} />
+        </ListItem>
+      )}
+    </List>
+  );
+
   return (
-    <div style={{ textAlign: 'left', position: 'relative' }}>
-      <Grid container spacing={3} alignItems="center">
-        <Grid item xs={1}>
+    <Paper elevation={3} style={{ padding: '20px', background: 'rgba(0, 0, 0, 0.7)', color: 'white' }}>
+      <Grid container spacing={2} alignItems="center">
+        <Grid item xs={2}>
           <Avatar
             alt={monsterDetail.name}
             src={monsterDetail.icon ? `images/${monsterDetail.icon}` : ''}
-            style={{ width: 80, height: 80, border: `3px solid ${borderColor}` }}
-            variant="circular"
+            sx={{ width: 80, height: 80, border: `3px solid ${borderColor}` }}
           >
-            {monsterDetail.icon ? null : monsterDetail.name.charAt(0)} {/* Show first letter if no icon */}
+            {monsterDetail.icon ? null : monsterDetail.name.charAt(0)}
           </Avatar>
         </Grid>
-        <Grid item xs={11}>
-          <Typography variant="h4">{monsterDetail.name}</Typography>
-          <Typography variant="body1">{monsterDetail.longDescription}</Typography>
-          <Typography variant="h6">
+        <Grid item xs={10}>
+          <Typography variant="h5" component="div" gutterBottom>
+            {monsterDetail.name}
+          </Typography>
+          <Typography variant="body2" gutterBottom>
+            {monsterDetail.longDescription}
+          </Typography>
+          <Typography variant="subtitle1">
             <strong>Health:</strong> {monsterDetail.health} | <strong>Level:</strong> {monsterDetail.level}
           </Typography>
         </Grid>
       </Grid>
-      <Grid container spacing={3}>
-        {/* Equipment on the left */}
+      <Divider sx={{ margin: '20px 0' }} />
+      <Grid container spacing={2}>
         <Grid item xs={4}>
-          <Typography variant="h6">Currently Equipped</Typography>
-          {monsterDetail.equipment?.length > 0
-            ? monsterDetail.equipment.map((item, idx) => <div key={idx}>{item}</div>)
-            : 'N/A'}
+          <Typography variant="subtitle2" gutterBottom>
+            Currently Equipped
+          </Typography>
+          {renderListItems(monsterDetail.equipment, 'N/A')}
         </Grid>
-
-        {/* Inventory on the right */}
         <Grid item xs={4}>
-          <Typography variant="h6">Inventory</Typography>
-          {monsterDetail.inventory?.length > 0
-            ? monsterDetail.inventory.map((item, idx) => <div key={idx}>{item}</div>)
-            : 'Nothing'}
+          <Typography variant="subtitle2" gutterBottom>
+            Inventory
+          </Typography>
+          {renderListItems(monsterDetail.inventory, 'Nothing')}
         </Grid>
-
-        {/* Effects if needed */}
         <Grid item xs={4}>
-          <Typography variant="h6">Effects</Typography>
-          {monsterDetail.effects?.length > 0
-            ? monsterDetail.effects.map((effect, idx) => <div key={idx}>{effect}</div>)
-            : 'None'}
+          <Typography variant="subtitle2" gutterBottom>
+            Effects
+          </Typography>
+          {renderListItems(monsterDetail.effects, 'None')}
         </Grid>
       </Grid>
-      <Divider style={{ margin: '20px 0' }} /> {/* Adding the divider here */}
-    </div>
+    </Paper>
   );
 };

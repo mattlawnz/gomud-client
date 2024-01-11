@@ -196,6 +196,33 @@ export type ScoreResponse = {
 
 /////////////////////////////////////////////////
 /// {"armorDetails":" Armor Class: 4 (+4), Wear Slots: [Chest],","attributeModifiers":{"Strength":1},"category":"Armor","color":"#909090","description":"A sturdy chest piece made of leather.","durability":{"current":0,"max":100},"level":50,"materials":["leather"],"name":"Leather Chest Piece","rarity":"Trash","score":22,"statModifiers":{"Health":5},"type":"itemDetails"} // This is the response from the server
+
+// /// {
+//     "armorDetails": " Armor Class: 4 (+4), Wear Slots: [Chest],",
+//     "attributeModifiers": {
+//         "Strength": 1
+//     },
+//     "category": "Armor",
+//     "color": "#909090",
+//     "description": "A sturdy chest piece made of leather.",
+//     "durability": {
+//         "current": 0,
+//         "max": 100
+//     },
+//     "itemID": 7,
+//     "level": 50,
+//     "materials": [
+//         "leather"
+//     ],
+//     "name": "Leather Chest Piece",
+//     "rarity": "Trash",
+//     "score": 22,
+//     "statModifiers": {
+//         "Health": 5
+//     },
+//     "type": "itemDetails"
+// }
+
 export type ItemDetails = {
   itemID: number;
   armorDetails?: string;

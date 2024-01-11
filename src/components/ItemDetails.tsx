@@ -18,6 +18,7 @@ export const ItemDetailsComponent = ({ itemId }: ItemDetailsProps) => {
     share: true,
     filter(message: WebSocketEventMap['message']) {
       const serverResponse = JSON.parse(message.data) as ServerResponse;
+      console.log('itemDetails Response:', serverResponse);
       return serverResponse.type === 'itemDetails';
     },
   });
@@ -26,6 +27,9 @@ export const ItemDetailsComponent = ({ itemId }: ItemDetailsProps) => {
     if (lastJsonMessage) {
       const detail = lastJsonMessage as ItemDetails;
       setItemDetails(detail);
+      console.log('itemDetails:', detail);
+      // log the itemID to the console
+      // console.log('itemID:', itemID);
     }
   }, [lastJsonMessage]);
 
@@ -36,6 +40,7 @@ export const ItemDetailsComponent = ({ itemId }: ItemDetailsProps) => {
         command: `ilook ${itemId}`,
       };
       sendJsonMessage(messageForServer);
+      console.log('Message for SErver itemDetails:', messageForServer);
     }
   }, [itemId, sendJsonMessage]);
 

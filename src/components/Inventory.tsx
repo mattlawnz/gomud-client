@@ -1,4 +1,4 @@
-import { Button, ButtonGroup } from '@mui/material';
+import { Button, ButtonGroup, CardContent, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
@@ -6,7 +6,7 @@ import { getSocketURL } from '../config';
 import type { ClientCommand, Inventory, ItemDetails, ItemType, ServerResponse } from '../types';
 
 type InventoryProps = {
-  serverResponse: ServerResponse;
+  sendCommand: (_command: string) => void;
 };
 
 type ItemDetailsProps = {
@@ -14,43 +14,59 @@ type ItemDetailsProps = {
 };
 
 export const ItemDetailsComponent = ({ itemDetails }: ItemDetailsProps) => {
-  // No need to fetch the details or use WebSocket in this component now
-  // Just render the details using the itemDetails prop
+  if (itemDetails === null) {
+    return <React.Fragment></React.Fragment>;
+  }
 
-  console.log(`ItemDetails: ${itemDetails}`);
-
-  return <React.Fragment></React.Fragment>;
+  return (
+    <React.Fragment>
+      <CardContent>
+        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+          {itemDetails.itemID}
+        </Typography>
+        <Typography variant="h5" component="div">
+          {itemDetails.name}
+        </Typography>
+        <Typography sx={{ mb: 1.5 }} color="text.secondary">
+          {itemDetails.description}
+        </Typography>
+        <Typography variant="body2">{itemDetails.type}</Typography>
+      </CardContent>
+    </React.Fragment>
+  );
 };
 
-export const InventoryComponent = (props: InventoryProps) => {
-  // This should be the state for storing the details of a single item
-  const [itemDetails, setItemDetails] = useState<ItemDetails | null>(null);
-
-  const [inventory, setInventory] = useState<Inventory | null>(null);
-
-  // type ItemDetailsProps = {
-  //   itemDetails: ItemDetails;
-  //   // sendJsonMessage is probably not needed anymore if you're passing the details directly
-  // };
-
-  const inventoryMessage = props.serverResponse.message;
-  //const [openLookDialog, setOpenLookDialog] = useState(false);
-  // const [activeItemId, setActiveItemId] = useState<number | null>(null);
-
-  try {
-    let data: Inventory | null = null;
-    data = JSON.parse(inventoryMessage) as Inventory;
-    setInventory(data);
-  } catch (err) {
-    console.error('Error parsing inventory:', err);
-  }
+export const InventoryComponent = ({ sendCommand }: InventoryProps) => {
   const { sendJsonMessage, lastJsonMessage } = useWebSocket<ServerResponse>(getSocketURL(), {
     share: true,
     filter(message: WebSocketEventMap['message']) {
       const serverResponse = JSON.parse(message.data) as ServerResponse;
-      return serverResponse.type === 'itemDetails';
+      return serverResponse.type === 'inventory' || serverResponse.type === 'itemDetails';
     },
   });
+
+  // Disable the eslint warning for the dependency array here as we only want to run this once
+  // when the component is first mounted so dependencies need to be empty array []
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => sendCommand('inventory'), []);
+
+  // This should be the state for storing the details of a single item
+  const [itemDetails, setItemDetails] = useState<ItemDetails | null>(null);
+  const [inventory, setInventory] = useState<Inventory>({} as Inventory);
+
+  // Expandable Sections: If the secondary dialog contains additional information or options related to a selection in the primary dialog, consider using expandable sections or accordions within the dialog. This allows the user to see more information without leaving the context of the original dialog.
+
+  useEffect(() => {
+    if (lastJsonMessage !== null) {
+      if (lastJsonMessage.type === 'inventory') {
+        const data = JSON.parse(lastJsonMessage.message) as Inventory;
+        setInventory(data); // Now you're setting the state correctly
+      } else if (lastJsonMessage.type === 'itemDetails') {
+        const response = lastJsonMessage as unknown as ItemDetails; // Use type assertion
+        setItemDetails(response); // Now you're setting the state correctly
+      }
+    }
+  }, [lastJsonMessage]);
 
   const handleDrop = (item: ItemType) => {
     const messageForServer: ClientCommand = {
@@ -68,36 +84,15 @@ export const InventoryComponent = (props: InventoryProps) => {
     sendJsonMessage(messageForServer);
   };
 
-  // const handleLook = (item: ItemType) => {
-  //   const messageForServer: ClientCommand = {
-  //     type: 'command',
-  //     command: `ilook ${item.itemInstanceID}`,
-  //   };
-  //   sendJsonMessage(messageForServer);
-  // };
-
   const handleLook = (itemId: number) => {
-    // setActiveItemId(itemId); // Set the active item ID
-    // setOpenLookDialog(true); // Open the dialog
     // Send the command to the server
+    console.log(`Looking at item ${itemId}`);
     const messageForServer: ClientCommand = {
       type: 'command',
       command: `ilook ${itemId}`,
     };
     sendJsonMessage(messageForServer);
   };
-
-  // Expandable Sections: If the secondary dialog contains additional information or options related to a selection in the primary dialog, consider using expandable sections or accordions within the dialog. This allows the user to see more information without leaving the context of the original dialog.
-
-  useEffect(() => {
-    if (lastJsonMessage !== null) {
-      const response = lastJsonMessage as unknown as ItemDetails; // Use type assertion
-      if (response.type === 'itemDetails') {
-        //setOpenLookDialog(true); // Open the dialog after setting the details
-        setItemDetails(response); // Now you're setting the state correctly
-      }
-    }
-  }, [lastJsonMessage]);
 
   return (
     <React.Fragment>

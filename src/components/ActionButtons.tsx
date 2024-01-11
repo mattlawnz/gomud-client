@@ -17,10 +17,15 @@ export const ActionButtons = () => {
   const [openInventoryDialog, setOpenInventoryDialog] = useState(false); // New state for inventory dialog
   const [openRecallDialog, setOpenRecallDialog] = useState(false); // New state for recall dialog
   const [serverResponse, setServerResponse] = useState<ServerResponse>();
-  const { sendJsonMessage } = useWebSocket(getSocketURL(), {
+  const { sendJsonMessage } = useWebSocket<ServerResponse>(getSocketURL(), {
     share: true,
     filter(message: WebSocketEventMap['message']) {
       const serverResponse = JSON.parse(message.data) as ServerResponse;
+
+      // TODO: setServerResponse needs to be removed from here
+      // We should not be setting the state in the filter function
+      // the filter function should only return true or false indicating whether this component is intersted in that type or not
+      // and useEffect should be used to assign values to state according to the type of the message
       setServerResponse(serverResponse);
       console.log('response', serverResponse);
       return serverResponse.type === 'exits';
@@ -67,7 +72,7 @@ export const ActionButtons = () => {
   };
 
   const handleInventoryButtonClick = () => {
-    sendCommand('inventory');
+    //sendCommand('inventory');
     setOpenInventoryDialog(true); // Open the inventory dialog
   };
   const handleCloseInventoryDialog = () => {
@@ -225,9 +230,9 @@ export const ActionButtons = () => {
           aria-labelledby="inventory-dialog-title"
         >
           <DialogTitle id="inventory-dialog-title">Inventory Information</DialogTitle>
-          {serverResponse && serverResponse.type === 'inventory' && (
-            <InventoryComponent serverResponse={serverResponse} />
-          )}
+          {/* {serverResponse && serverResponse.type === 'inventory' && ( */}
+          <InventoryComponent sendCommand={sendCommand} />
+          {/* )} */}
         </Dialog>
         {/* Dialog for Recall */}
         <Dialog open={openRecallDialog} onClose={handleCloseRecallDialog} aria-labelledby="recall-dialog-title">

@@ -1,4 +1,5 @@
-import { Button, Dialog, DialogTitle, Grid } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { AppBar, Button, Dialog, DialogTitle, Grid, IconButton, Toolbar } from '@mui/material';
 import React, { useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
@@ -225,11 +226,21 @@ export const ActionButtons = () => {
         </Dialog>
         {/* Dialog for Inventory */}
         <Dialog
+          fullScreen
           open={openInventoryDialog}
           onClose={handleCloseInventoryDialog}
           aria-labelledby="inventory-dialog-title"
         >
-          <DialogTitle id="inventory-dialog-title">Inventory Information</DialogTitle>
+          {' '}
+          <AppBar sx={{ position: 'relative' }}>
+            <Toolbar>
+              <IconButton edge="start" color="inherit" onClick={handleCloseInventoryDialog} aria-label="close">
+                <CloseIcon />
+              </IconButton>
+              Close Inventory
+            </Toolbar>
+          </AppBar>
+          {/* <DialogTitle id="inventory-dialog-title">Inventory Information</DialogTitle> */}
           {/* {serverResponse && serverResponse.type === 'inventory' && ( */}
           <InventoryComponent sendCommand={sendCommand} />
           {/* )} */}

@@ -1,13 +1,10 @@
-import { Button, ButtonGroup, CardContent, Typography } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { AppBar, Button, ButtonGroup, CardContent, IconButton, Toolbar, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
 import { getSocketURL } from '../config';
 import type { ClientCommand, Inventory, ItemDetails, ItemType, ServerResponse } from '../types';
-
-type InventoryProps = {
-  sendCommand: (_command: string) => void;
-};
 
 type ItemDetailsProps = {
   itemDetails: ItemDetails | null;
@@ -36,6 +33,10 @@ export const ItemDetailsComponent = ({ itemDetails }: ItemDetailsProps) => {
   );
 };
 
+type InventoryProps = {
+  sendCommand: (_command: string) => void;
+};
+
 export const InventoryComponent = ({ sendCommand }: InventoryProps) => {
   const { sendJsonMessage, lastJsonMessage } = useWebSocket<ServerResponse>(getSocketURL(), {
     share: true,
@@ -53,6 +54,7 @@ export const InventoryComponent = ({ sendCommand }: InventoryProps) => {
   // This should be the state for storing the details of a single item
   const [itemDetails, setItemDetails] = useState<ItemDetails | null>(null);
   const [inventory, setInventory] = useState<Inventory>({} as Inventory);
+  const [showDetails, setShowDetails] = useState(false);
 
   // Expandable Sections: If the secondary dialog contains additional information or options related to a selection in the primary dialog, consider using expandable sections or accordions within the dialog. This allows the user to see more information without leaving the context of the original dialog.
 
@@ -92,8 +94,30 @@ export const InventoryComponent = ({ sendCommand }: InventoryProps) => {
       command: `ilook ${itemId}`,
     };
     sendJsonMessage(messageForServer);
+    setShowDetails(true);
   };
 
+  const handleCloseDetails = () => {
+    setShowDetails(false); // Close the inventory dialog
+  };
+
+  if (showDetails) {
+    return (
+      <React.Fragment>
+        <AppBar sx={{ position: 'relative' }}>
+          <Toolbar>
+            <IconButton edge="start" color="inherit" onClick={handleCloseDetails} aria-label="close">
+              <ArrowBackIcon />
+            </IconButton>
+            Back to list
+          </Toolbar>
+        </AppBar>
+        <ItemDetailsComponent itemDetails={itemDetails} />
+      </React.Fragment>
+    );
+  }
+
+  // by default, return the list of items in inventory
   return (
     <React.Fragment>
       {inventory && inventory.items ? (
@@ -117,10 +141,6 @@ export const InventoryComponent = ({ sendCommand }: InventoryProps) => {
       ) : (
         <div>No inventory items found.</div>
       )}
-      {/* <Dialog open={openLookDialog} onClose={() => setOpenLookDialog(false)}>
-        <DialogTitle id="look-dialog-title">Item Details</DialogTitle> */}
-      <ItemDetailsComponent itemDetails={itemDetails} />
-      {/* </Dialog> */}
     </React.Fragment>
   );
 };

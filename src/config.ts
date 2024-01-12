@@ -12,6 +12,6 @@ export function getSocketURL() {
   // if the value is not provided, we will fall back to the current host
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   const host = window.location.host;
-  console.log(`Using ${protocol}//${host}/websocket`);
+  // console.log(`Using ${protocol}//${host}/websocket`);
   return `${protocol}//${host}/websocket`;
 }

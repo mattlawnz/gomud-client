@@ -100,6 +100,87 @@ const monstersOptions = {
   // Add more options as needed...
 };
 
+const itemsOptions = {
+  'one-item': [
+    {
+      itemInstanceID: 7,
+      itemName: 'Leather Chest Piece',
+      itemDescription: 'A sturdy chest piece made of leather.',
+      itemIcon: '',
+      itemLevel: 50,
+      itemEffects: null,
+      itemScore: 22,
+      itemRarity: 'Trash',
+      itemType: '',
+      itemColor: '#909090',
+    },
+  ],
+  'two-items': [
+    {
+      itemInstanceID: 7,
+      itemName: 'Leather Chest Piece',
+      itemDescription: 'A sturdy chest piece made of leather.',
+      itemIcon: '',
+      itemLevel: 50,
+      itemEffects: null,
+      itemScore: 22,
+      itemRarity: 'Trash',
+      itemType: '',
+      itemColor: '#909090',
+    },
+    {
+      itemInstanceID: 8,
+      itemName: 'Chainmail Leggings',
+      itemDescription: 'Durable leggings made from chainmail and leather.',
+      itemIcon: '',
+      itemLevel: 10,
+      itemEffects: null,
+      itemScore: 84,
+      itemRarity: 'Uncommon',
+      itemType: '',
+      itemColor: '#00FF00',
+    },
+  ],
+  'three-item': [
+    {
+      itemInstanceID: 7,
+      itemName: 'Leather Chest Piece',
+      itemDescription: 'A sturdy chest piece made of leather.',
+      itemIcon: '',
+      itemLevel: 50,
+      itemEffects: null,
+      itemScore: 22,
+      itemRarity: 'Trash',
+      itemType: '',
+      itemColor: '#909090',
+    },
+    {
+      itemInstanceID: 8,
+      itemName: 'Chainmail Leggings',
+      itemDescription: 'Durable leggings made from chainmail and leather.',
+      itemIcon: '',
+      itemLevel: 10,
+      itemEffects: null,
+      itemScore: 84,
+      itemRarity: 'Uncommon',
+      itemType: '',
+      itemColor: '#00FF00',
+    },
+    {
+      itemInstanceID: 9,
+      itemName: 'Wooden Mace',
+      itemDescription: 'A sturdy mace made from wood and bronze.',
+      itemIcon: '',
+      itemLevel: 3,
+      itemEffects: null,
+      itemScore: 64,
+      itemRarity: 'Legendary',
+      itemType: '',
+      itemColor: '#FFD700',
+    },
+  ],
+};
+
 const meta: Meta<typeof RoomComponent> = {
   component: RoomComponent,
   argTypes: {
@@ -113,6 +194,13 @@ const meta: Meta<typeof RoomComponent> = {
     monstersData: {
       options: Object.keys(monstersOptions),
       mapping: monstersOptions,
+      control: {
+        type: 'select',
+      },
+    },
+    itemsData: {
+      options: Object.keys(itemsOptions),
+      mapping: itemsOptions,
       control: {
         type: 'select',
       },

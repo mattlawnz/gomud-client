@@ -58,7 +58,6 @@ export const MonsterList = ({ monstersData, sendCommand }: RoomComponentProps) =
   return (
     // <div style={{ height: '14%', textAlign: 'left', border: '1px solid white', background: 'rgba(0, 0, 0, 0.5)' }}>
     <div>
-      {' '}
       {/* Apply left alignment here */}
       {monstersData &&
         monstersData.map((monster, idx) => (

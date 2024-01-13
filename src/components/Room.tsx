@@ -17,6 +17,7 @@ import type {
 import { ActionButtonsRight } from './ActionButtonsRight';
 import { Consumables } from './Consumables';
 import Controller from './Controller';
+import { ItemDetailsComponent } from './ItemDetails';
 import { ItemList } from './ItemList';
 import { MonsterDetailComponent } from './MonsterDetails';
 import { MonsterList } from './MonsterList';
@@ -66,6 +67,13 @@ export const RoomComponent = ({
       <React.Fragment>
         <DialogTitle id="look-dialog-title">Monster Details</DialogTitle>
         <MonsterDetailComponent monsterDetailsData={monsterDetailsData} sendCommand={sendCommand} />
+      </React.Fragment>
+    );
+  } else if (secondaryView === 'itemDetails') {
+    secondaryViewComponent = (
+      <React.Fragment>
+        <DialogTitle id="look-dialog-title">Item Details</DialogTitle>
+        <ItemDetailsComponent itemDetailsData={itemDetailsData} sendCommand={sendCommand} />
       </React.Fragment>
     );
   }
@@ -179,7 +187,7 @@ export const RoomComponent = ({
                 }}
               >
                 {/* <MonsterList /> */}
-                <ItemList itemsData={itemsData} itemDetailsData={itemDetailsData} sendCommand={sendCommand} />
+                <ItemList itemsData={itemsData} sendCommand={sendCommand} />
                 <Consumables />
               </div>
             </Grid>

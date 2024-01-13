@@ -1,19 +1,18 @@
-import { Button, ButtonGroup, Dialog, DialogTitle } from '@mui/material';
+import { Button, ButtonGroup } from '@mui/material';
 import { useState } from 'react';
 
-import type { ItemDetails, ItemType } from '../types';
-import { ItemDetailsComponent } from './ItemDetails';
+import type { ItemType } from '../types';
 import type { SecondaryView } from './Room';
 
 export type ItemComponentProps = {
   itemsData: ItemType[];
-  itemDetailsData: ItemDetails | null;
+  // itemDetailsData: ItemDetails | null;
   sendCommand: (_command: string, _secondaryView: SecondaryView) => void;
 };
 
-export const ItemList = ({ itemsData, itemDetailsData, sendCommand }: ItemComponentProps) => {
+export const ItemList = ({ itemsData, sendCommand }: ItemComponentProps) => {
   // const [items, setItems] = useState<ItemType[]>([]);
-  const [openLookDialog, setOpenLookDialog] = useState(false);
+  // const [openLookDialog, setOpenLookDialog] = useState(false);
   const [activeItemId, setActiveItemId] = useState<number | null>(null);
   // const { sendJsonMessage, lastJsonMessage } = useWebSocket(getSocketURL(), {
   //   share: true,
@@ -32,7 +31,7 @@ export const ItemList = ({ itemsData, itemDetailsData, sendCommand }: ItemCompon
 
   const handleLook = (itemId: number) => {
     setActiveItemId(itemId); // Set the active item ID
-    setOpenLookDialog(true); // Open the dialog
+    // setOpenLookDialog(true); // Open the dialog
     sendCommand(`ilook ${itemId}`, 'itemDetails');
   };
 
@@ -108,10 +107,10 @@ export const ItemList = ({ itemsData, itemDetailsData, sendCommand }: ItemCompon
             )}
           </ButtonGroup>
         ))}
-      <Dialog open={openLookDialog} onClose={() => setOpenLookDialog(false)}>
+      {/* <Dialog open={openLookDialog} onClose={() => setOpenLookDialog(false)}>
         <DialogTitle id="look-dialog-title">Item Details</DialogTitle>
         <ItemDetailsComponent itemDetailsData={itemDetailsData} sendCommand={sendCommand} />
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 };

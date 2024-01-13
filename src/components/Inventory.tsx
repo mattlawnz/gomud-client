@@ -1,5 +1,16 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { AppBar, Button, ButtonGroup, CardContent, IconButton, Toolbar, Typography } from '@mui/material';
+import {
+  AppBar,
+  Button,
+  ButtonGroup,
+  CardContent,
+  IconButton,
+  List,
+  ListItem,
+  Toolbar,
+  Typography,
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import React, { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
@@ -11,23 +22,61 @@ type ItemDetailsProps = {
 };
 
 export const ItemDetailsComponent = ({ itemDetails }: ItemDetailsProps) => {
+  const theme = useTheme();
   if (itemDetails === null) {
     return <React.Fragment></React.Fragment>;
   }
+  const renderList = (items: string[], title: string) => (
+    <div>
+      <Typography variant="subtitle1">{title}</Typography>
+      <List dense>
+        {items.map((item, index) => (
+          <ListItem key={index}>
+            <Typography variant="body2">{item}</Typography>
+          </ListItem>
+        ))}
+      </List>
+    </div>
+  );
+
+  const renderModifiers = (modifiers: { [key: string]: number }, title: string) => (
+    <div>
+      <Typography variant="subtitle1">{title}</Typography>
+      <List dense>
+        {Object.entries(modifiers).map(([key, value], index) => (
+          <ListItem key={index}>
+            <Typography variant="body2">{`${key}: ${value}`}</Typography>
+          </ListItem>
+        ))}
+      </List>
+    </div>
+  );
 
   return (
     <React.Fragment>
       <CardContent>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          {itemDetails.itemID}
-        </Typography>
-        <Typography variant="h5" component="div">
+        <Typography variant="h5" component="div" sx={{ color: itemDetails.color, marginBottom: theme.spacing(1) }}>
           {itemDetails.name}
         </Typography>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
+        <Typography sx={{ marginBottom: theme.spacing(0.5) }} color="text.secondary">
           {itemDetails.description}
         </Typography>
-        <Typography variant="body2">{itemDetails.type}</Typography>
+        {itemDetails.armorDetails && <Typography variant="body2">Armor: {itemDetails.armorDetails}</Typography>}
+        {itemDetails.weaponDetails && <Typography variant="body2">Weapon: {itemDetails.weaponDetails}</Typography>}
+        {/* {itemDetails.category && <Typography variant="body2">Category: {itemDetails.category}</Typography>} */}
+        {itemDetails.durability && (
+          <Typography variant="body2">
+            Durability: {itemDetails.durability.current}/{itemDetails.durability.max}
+          </Typography>
+        )}
+        {itemDetails.level && <Typography variant="body2">Level: {itemDetails.level}</Typography>}
+        <Typography variant="body2">Rarity: {itemDetails.rarity}</Typography>
+        <Typography variant="body2">Score: {itemDetails.score}</Typography>
+        {/* {itemDetails.wearSlots && <Typography variant="body2">Worn On: {itemDetails.wearSlots.join(', ')}</Typography>} */}
+        {/* Lists at the bottom */}
+        {itemDetails.materials && renderList(itemDetails.materials, 'Materials')}
+        {itemDetails.attributeModifiers && renderModifiers(itemDetails.attributeModifiers, 'Attribute Modifiers')}
+        {itemDetails.statModifiers && renderModifiers(itemDetails.statModifiers, 'Stat Modifiers')}
       </CardContent>
     </React.Fragment>
   );

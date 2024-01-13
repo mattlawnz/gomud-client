@@ -1,44 +1,42 @@
 import { Avatar, Divider, Grid, List, ListItem, ListItemText, Paper, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
-import useWebSocket from 'react-use-websocket';
-import type { ClientCommand, MonsterDetail, ServerResponse } from 'src/types';
-
-import { getSocketURL } from '../config';
+import type { MonsterDetail } from 'src/types';
 
 type MonsterDetailProps = {
-  monsterId: number | null;
+  //monsterId: number | null;
   // eslint-disable-next-line no-unused-vars
-  sendJsonMessage: (message: ClientCommand) => void;
+  // sendJsonMessage: (message: ClientCommand) => void;
+  monsterDetailsData: MonsterDetail | null;
+  sendCommand: (_command: string) => void;
 };
 
-export const MonsterDetailComponent = ({ monsterId }: MonsterDetailProps) => {
-  const [monsterDetail, setMonsterDetail] = useState<MonsterDetail | null>(null);
+export const MonsterDetailComponent = ({ monsterDetailsData: monsterDetail }: MonsterDetailProps) => {
+  // const [monsterDetail, setMonsterDetail] = useState<MonsterDetail | null>(null);
 
-  const { sendJsonMessage, lastJsonMessage } = useWebSocket(getSocketURL(), {
-    share: true,
-    filter(message: WebSocketEventMap['message']) {
-      const serverResponse = JSON.parse(message.data) as ServerResponse;
-      return serverResponse.type === 'monsterDetails';
-    },
-  });
+  // const { sendJsonMessage, lastJsonMessage } = useWebSocket(getSocketURL(), {
+  //   share: true,
+  //   filter(message: WebSocketEventMap['message']) {
+  //     const serverResponse = JSON.parse(message.data) as ServerResponse;
+  //     return serverResponse.type === 'monsterDetails';
+  //   },
+  // });
 
-  useEffect(() => {
-    if (lastJsonMessage) {
-      // Assert the type of lastJsonMessage to MonsterDetail
-      const detail = lastJsonMessage as MonsterDetail;
-      setMonsterDetail(detail);
-    }
-  }, [lastJsonMessage]);
+  // useEffect(() => {
+  //   if (lastJsonMessage) {
+  //     // Assert the type of lastJsonMessage to MonsterDetail
+  //     const detail = lastJsonMessage as MonsterDetail;
+  //     setMonsterDetail(detail);
+  //   }
+  // }, [lastJsonMessage]);
 
-  useEffect(() => {
-    if (monsterId !== null) {
-      const messageForServer: ClientCommand = {
-        type: 'command',
-        command: `mlook ${monsterId}`,
-      };
-      sendJsonMessage(messageForServer);
-    }
-  }, [monsterId, sendJsonMessage]);
+  // useEffect(() => {
+  //   if (monsterId !== null) {
+  //     const messageForServer: ClientCommand = {
+  //       type: 'command',
+  //       command: `mlook ${monsterId}`,
+  //     };
+  //     sendJsonMessage(messageForServer);
+  //   }
+  // }, [monsterId, sendJsonMessage]);
 
   if (!monsterDetail) {
     return <div>No monster details available.</div>;

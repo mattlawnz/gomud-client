@@ -1,57 +1,54 @@
 import { Button, ButtonGroup, Dialog, DialogTitle } from '@mui/material';
-import { useEffect, useState } from 'react';
-import useWebSocket from 'react-use-websocket';
+import { useState } from 'react';
 
-import { getSocketURL } from '../config';
-import type { ClientCommand, ItemsInRoomResponse, ItemType, ServerResponse } from '../types';
+import type { ItemDetails, ItemType } from '../types';
 import { ItemDetailsComponent } from './ItemDetails';
 
-export const ItemList = () => {
-  const [items, setItems] = useState<ItemType[]>([]);
+export type ItemComponentProps = {
+  itemsData: ItemType[];
+  itemDetailsData: ItemDetails | null;
+  sendCommand: (_command: string) => void;
+};
+
+export const ItemList = ({ itemsData, itemDetailsData, sendCommand }: ItemComponentProps) => {
+  // const [items, setItems] = useState<ItemType[]>([]);
   const [openLookDialog, setOpenLookDialog] = useState(false);
   const [activeItemId, setActiveItemId] = useState<number | null>(null);
-  const { sendJsonMessage, lastJsonMessage } = useWebSocket(getSocketURL(), {
-    share: true,
-    filter(message: WebSocketEventMap['message']) {
-      const serverResponse = JSON.parse(message.data) as ServerResponse;
-      return serverResponse.type === 'itemsinroom';
-    },
-  });
+  // const { sendJsonMessage, lastJsonMessage } = useWebSocket(getSocketURL(), {
+  //   share: true,
+  //   filter(message: WebSocketEventMap['message']) {
+  //     const serverResponse = JSON.parse(message.data) as ServerResponse;
+  //     return serverResponse.type === 'itemsinroom';
+  //   },
+  // });
 
-  useEffect(() => {
-    if (lastJsonMessage !== null) {
-      const itemsInRoomResponse = lastJsonMessage as ItemsInRoomResponse;
-      setItems(itemsInRoomResponse.itemNames);
-    }
-  }, [lastJsonMessage]);
+  // useEffect(() => {
+  //   if (lastJsonMessage !== null) {
+  //     const itemsInRoomResponse = lastJsonMessage as ItemsInRoomResponse;
+  //     setItems(itemsInRoomResponse.itemNames);
+  //   }
+  // }, [lastJsonMessage]);
 
   const handleLook = (itemId: number) => {
     setActiveItemId(itemId); // Set the active item ID
     setOpenLookDialog(true); // Open the dialog
+    sendCommand(`ilook ${itemId}`);
   };
 
   const handleGet = (item: ItemType) => {
-    const messageForServer: ClientCommand = {
-      type: 'command',
-      command: `iget ${item.itemInstanceID}`,
-    };
-    sendJsonMessage(messageForServer);
+    sendCommand(`iget ${item.itemInstanceID}`);
     setActiveItemId(null);
   };
 
   const itemToChat = (item: ItemType) => {
-    const messageForServer: ClientCommand = {
-      type: 'command',
-      command: `itemToChat ${item.itemInstanceID}`,
-    };
-    sendJsonMessage(messageForServer);
+    sendCommand(`iget ${item.itemInstanceID}`);
     setActiveItemId(null);
   };
 
   return (
     <div style={{ textAlign: 'left', display: 'flex', flexWrap: 'wrap' }}>
-      {items &&
-        items.map((item, idx) => (
+      {itemsData &&
+        itemsData.map((item, idx) => (
           <ButtonGroup
             key={idx}
             variant="text"
@@ -112,7 +109,7 @@ export const ItemList = () => {
         ))}
       <Dialog open={openLookDialog} onClose={() => setOpenLookDialog(false)}>
         <DialogTitle id="look-dialog-title">Item Details</DialogTitle>
-        <ItemDetailsComponent itemId={activeItemId} sendJsonMessage={sendJsonMessage} />
+        <ItemDetailsComponent itemDetailsData={itemDetailsData} sendCommand={sendCommand} />
       </Dialog>
     </div>
   );

@@ -1,10 +1,19 @@
 import { Box, Grid, Typography } from '@mui/material';
-import React, { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
 import { getSocketURL } from '../config';
-import { useRoomData } from '../hooks/useRoomData';
-import type { ClientCommand, RoomType } from '../types';
+import type {
+  ClientCommand,
+  ItemDetails,
+  ItemsInRoomResponse,
+  ItemType,
+  MonsterDetail,
+  MonstersInRoomResponse,
+  MonsterType,
+  RoomType,
+  ServerResponse,
+} from '../types';
 import { ActionButtonsRight } from './ActionButtonsRight';
 import { Consumables } from './Consumables';
 import Controller from './Controller';
@@ -14,10 +23,21 @@ import { PromptOutput } from './PromptOutput';
 
 export type RoomComponentProps = {
   roomData: RoomType;
+  monstersData: MonsterType[];
+  monsterDetailsData: MonsterDetail | null;
+  itemsData: ItemType[];
+  itemDetailsData: ItemDetails | null;
   sendCommand: (_command: string) => void;
 };
 
-export const RoomComponent = ({ roomData, sendCommand }: RoomComponentProps) => {
+export const RoomComponent = ({
+  roomData,
+  monstersData,
+  monsterDetailsData,
+  itemsData,
+  itemDetailsData,
+  sendCommand,
+}: RoomComponentProps) => {
   if (!roomData || !roomData.type) {
     return (
       <Box>
@@ -137,7 +157,7 @@ export const RoomComponent = ({ roomData, sendCommand }: RoomComponentProps) => 
               }}
             >
               {/* <MonsterList /> */}
-              <ItemList />
+              <ItemList itemsData={itemsData} itemDetailsData={itemDetailsData} sendCommand={sendCommand} />
               <Consumables />
             </div>
           </Grid>
@@ -194,7 +214,7 @@ export const RoomComponent = ({ roomData, sendCommand }: RoomComponentProps) => 
           >
             Monsters:
           </Box>
-          <MonsterList />
+          <MonsterList monstersData={monstersData} monsterDetailsData={monsterDetailsData} sendCommand={sendCommand} />
           {/* <ItemList />
           <Consumables /> */}
         </Grid>
@@ -211,19 +231,69 @@ export const RoomComponent = ({ roomData, sendCommand }: RoomComponentProps) => 
           <ActionButtonsRight />
         </Grid>
       </Grid>
-      <DummyLookCommandComponent sendCommand={sendCommand} />;
+      {/* <DummyLookCommandComponent sendCommand={sendCommand} />; */}
     </Box>
   );
 };
 
+// create a list of key map to look up
+// const acceptableMessageTypes = {
+//   room: {},
+//   monstersinroom: {},
+//   itemsinroom: {},
+// };
+
+// create a map of strings to lookup
+const acceptableMessageTypes = ['room', 'monstersinroom', 'monsterDetails', 'itemsinroom', 'itemDetails'];
+
 // The RoomView component fetches the room data and handles sending commands
 export const RoomView = () => {
-  // Fetch the room data
-  const roomData = useRoomData();
-  // Establish a WebSocket connection
-  const { sendJsonMessage } = useWebSocket(getSocketURL(), {
+  // // Fetch the room data
+  // const roomData = useRoomData();
+  // // Establish a WebSocket connection
+  // const { sendJsonMessage } = useWebSocket(getSocketURL(), {
+  //   share: true,
+  // });
+
+  // this will share the main websocket connection with the parent component because we have share:true
+  // the filter will help us to only get the messages that we want i.e. where type is `room` for this component
+  const { lastJsonMessage, sendJsonMessage } = useWebSocket<ServerResponse>(getSocketURL(), {
     share: true,
+    filter(message: WebSocketEventMap['message']) {
+      const serverResponse = JSON.parse(message.data) as ServerResponse;
+      console.log('serverResponse.type', serverResponse.type);
+      const componentWillHandle = acceptableMessageTypes.includes(serverResponse.type);
+      console.log(`componentWillHandle: ${componentWillHandle} the response`, serverResponse);
+      return componentWillHandle;
+    },
   });
+
+  const [roomData, setRoomData] = useState<RoomType>({} as RoomType);
+  const [monstersData, setMonstersData] = useState<MonsterType[]>([]);
+  const [monsterDetailsData, setMonsterDetailsData] = useState<MonsterDetail | null>(null);
+  const [itemsData, setItemsData] = useState<ItemType[]>([]);
+  const [itemDetailsData, setItemDetailsData] = useState<ItemDetails | null>(null);
+
+  useEffect(() => {
+    if (lastJsonMessage !== null) {
+      if (lastJsonMessage.type === 'room') {
+        const data = lastJsonMessage as unknown as RoomType;
+        setRoomData(data);
+      } else if (lastJsonMessage.type === 'monstersinroom') {
+        const data = lastJsonMessage as unknown as MonstersInRoomResponse;
+        setMonstersData(data.monsterDescriptions);
+      } else if (lastJsonMessage.type === 'monsterDetails') {
+        const data = lastJsonMessage as unknown as MonsterDetail;
+        setMonsterDetailsData(data);
+      } else if (lastJsonMessage.type === 'itemsinroom') {
+        const data = lastJsonMessage as unknown as ItemsInRoomResponse;
+        setItemsData(data.itemNames);
+      } else if (lastJsonMessage.type === 'itemDetails') {
+        const data = lastJsonMessage as unknown as ItemDetails;
+        setItemDetailsData(data);
+      }
+    }
+  }, [lastJsonMessage, setRoomData]);
 
   // Function to send a command to the server
   const sendCommand = (commandValue: string) => {
@@ -235,24 +305,33 @@ export const RoomView = () => {
   };
 
   // Render the RoomComponent with the fetched room data and sendCommand function
-  return <RoomComponent roomData={roomData} sendCommand={sendCommand} />;
+  return (
+    <RoomComponent
+      roomData={roomData}
+      monstersData={monstersData}
+      monsterDetailsData={monsterDetailsData}
+      itemsData={itemsData}
+      itemDetailsData={itemDetailsData}
+      sendCommand={sendCommand}
+    />
+  );
 };
 
-export type DummyLookCommandComponentProps = {
-  sendCommand: (_command: string) => void;
-};
-/**
- * This is a dummy component to call the `look` command again. The issue is that sometimes the components
- * take time to load and we have already received the data e.g. `monstersinroom` via the websocket. This just
- * makes another call to `look` command to get room data and update. Note that this is only really needed
- * during the load of first room. It could be that it may be needed when we switch to `fight` view and then
- * back to `room` view.
- */
-export const DummyLookCommandComponent = ({ sendCommand }: DummyLookCommandComponentProps) => {
-  // Disable the eslint warning for the dependency array here as we only want to run this once
-  // when the component is first mounted so dependencies need to be empty array []
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => sendCommand('look'), []);
+// export type DummyLookCommandComponentProps = {
+//   sendCommand: (_command: string) => void;
+// };
+// /**
+//  * This is a dummy component to call the `look` command again. The issue is that sometimes the components
+//  * take time to load and we have already received the data e.g. `monstersinroom` via the websocket. This just
+//  * makes another call to `look` command to get room data and update. Note that this is only really needed
+//  * during the load of first room. It could be that it may be needed when we switch to `fight` view and then
+//  * back to `room` view.
+//  */
+// export const DummyLookCommandComponent = ({ sendCommand }: DummyLookCommandComponentProps) => {
+//   // Disable the eslint warning for the dependency array here as we only want to run this once
+//   // when the component is first mounted so dependencies need to be empty array []
+//   // eslint-disable-next-line react-hooks/exhaustive-deps
+//   useEffect(() => sendCommand('look'), []);
 
-  return <React.Fragment></React.Fragment>;
-};
+//   return <React.Fragment></React.Fragment>;
+// };

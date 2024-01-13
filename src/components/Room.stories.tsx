@@ -24,12 +24,95 @@ const roomOptions = {
   // Add more options as needed...
 };
 
+const monstersOptions = {
+  'one-monster': [
+    {
+      monsterInstanceID: 1,
+      currentHealthPoints: 90,
+      currentManaPoints: 0,
+      monsterName: 'Goblin',
+      shortDescription: 'A sneaky goblin',
+      longDescription: 'This is a small, sneaky goblin with green skin and sharp teeth.',
+      monsterIcon: 'goblin_male_1.png',
+      monsterEffects: [],
+      inventory: null,
+      level: 0,
+      levelDiff: 0,
+      rank: '',
+      race: '',
+      species: '',
+      isFighting: false,
+    },
+  ],
+  'two-monsters': [
+    {
+      monsterInstanceID: 1,
+      currentHealthPoints: 90,
+      currentManaPoints: 0,
+      monsterName: 'Goblin',
+      shortDescription: 'A sneaky goblin',
+      longDescription: 'This is a small, sneaky goblin with green skin and sharp teeth.',
+      monsterIcon: 'goblin_male_1.png',
+      monsterEffects: [
+        {
+          name: 'Shield',
+          adjective: '',
+          description: '',
+          type: 0,
+          duration: -1000000000,
+          applicationTime: '2024-01-13T19:50:20.897213317+13:00',
+          power: 0,
+          stacks: 1,
+          affectedStat: {},
+          affectedSkills: null,
+          affectedAttributes: {},
+          msgOnApply: '',
+          msgOnExpire: '',
+          msgOnTick: '',
+        },
+      ],
+      inventory: null,
+      level: 0,
+      levelDiff: 0,
+      rank: '',
+      race: '',
+      species: '',
+      isFighting: false,
+    },
+    {
+      monsterInstanceID: 2,
+      currentHealthPoints: 80,
+      currentManaPoints: 0,
+      monsterName: 'Goblin',
+      shortDescription: 'A sneaky goblin',
+      longDescription: 'This is a small, sneaky goblin with green skin and sharp teeth.',
+      monsterIcon: 'goblin_male_1.png',
+      monsterEffects: [],
+      inventory: null,
+      level: 0,
+      levelDiff: 0,
+      rank: '',
+      race: '',
+      species: '',
+      isFighting: false,
+    },
+  ],
+  // Add more options as needed...
+};
+
 const meta: Meta<typeof RoomComponent> = {
   component: RoomComponent,
   argTypes: {
     roomData: {
       options: Object.keys(roomOptions),
       mapping: roomOptions,
+      control: {
+        type: 'select',
+      },
+    },
+    monstersData: {
+      options: Object.keys(monstersOptions),
+      mapping: monstersOptions,
       control: {
         type: 'select',
       },

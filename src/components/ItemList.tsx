@@ -3,11 +3,12 @@ import { useState } from 'react';
 
 import type { ItemDetails, ItemType } from '../types';
 import { ItemDetailsComponent } from './ItemDetails';
+import type { SecondaryView } from './Room';
 
 export type ItemComponentProps = {
   itemsData: ItemType[];
   itemDetailsData: ItemDetails | null;
-  sendCommand: (_command: string) => void;
+  sendCommand: (_command: string, _secondaryView: SecondaryView) => void;
 };
 
 export const ItemList = ({ itemsData, itemDetailsData, sendCommand }: ItemComponentProps) => {
@@ -32,16 +33,16 @@ export const ItemList = ({ itemsData, itemDetailsData, sendCommand }: ItemCompon
   const handleLook = (itemId: number) => {
     setActiveItemId(itemId); // Set the active item ID
     setOpenLookDialog(true); // Open the dialog
-    sendCommand(`ilook ${itemId}`);
+    sendCommand(`ilook ${itemId}`, 'itemDetails');
   };
 
   const handleGet = (item: ItemType) => {
-    sendCommand(`iget ${item.itemInstanceID}`);
+    sendCommand(`iget ${item.itemInstanceID}`, null);
     setActiveItemId(null);
   };
 
   const itemToChat = (item: ItemType) => {
-    sendCommand(`iget ${item.itemInstanceID}`);
+    sendCommand(`iget ${item.itemInstanceID}`, null);
     setActiveItemId(null);
   };
 

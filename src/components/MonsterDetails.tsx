@@ -1,12 +1,14 @@
 import { Avatar, Divider, Grid, List, ListItem, ListItemText, Paper, Typography } from '@mui/material';
 import type { MonsterDetail } from 'src/types';
 
+import type { SecondaryView } from './Room';
+
 type MonsterDetailProps = {
   //monsterId: number | null;
   // eslint-disable-next-line no-unused-vars
   // sendJsonMessage: (message: ClientCommand) => void;
   monsterDetailsData: MonsterDetail | null;
-  sendCommand: (_command: string) => void;
+  sendCommand: (_command: string, _secondaryView: SecondaryView) => void;
 };
 
 export const MonsterDetailComponent = ({ monsterDetailsData: monsterDetail }: MonsterDetailProps) => {

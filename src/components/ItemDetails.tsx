@@ -1,13 +1,14 @@
 import { List, ListItem, ListItemText, Paper, Typography } from '@mui/material';
 
 import type { ItemDetails } from '../types';
+import type { SecondaryView } from './Room';
 
 type ItemDetailsProps = {
   // itemId: number | null;
   // // eslint-disable-next-line no-unused-vars
   // sendJsonMessage: (message: ClientCommand) => void;
   itemDetailsData: ItemDetails | null;
-  sendCommand: (_command: string) => void;
+  sendCommand: (_command: string, _secondaryView: SecondaryView) => void;
 };
 
 export const ItemDetailsComponent = ({ itemDetailsData: itemDetails }: ItemDetailsProps) => {

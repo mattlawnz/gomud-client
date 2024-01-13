@@ -1,19 +1,19 @@
-import { Button, ButtonGroup, Dialog, DialogTitle } from '@mui/material';
+import { Button, ButtonGroup } from '@mui/material';
 import { useState } from 'react';
 
-import type { MonsterDetail, MonsterType } from '../types';
-import { MonsterDetailComponent } from './MonsterDetails';
+import type { MonsterType } from '../types';
+import type { SecondaryView } from './Room';
 
 export type RoomComponentProps = {
   monstersData: MonsterType[];
-  monsterDetailsData: MonsterDetail | null;
-  sendCommand: (_command: string) => void;
+  // monsterDetailsData: MonsterDetail | null;
+  sendCommand: (_command: string, _secondaryView: SecondaryView) => void;
 };
-export const MonsterList = ({ monstersData, monsterDetailsData, sendCommand }: RoomComponentProps) => {
+export const MonsterList = ({ monstersData, sendCommand }: RoomComponentProps) => {
   // const [monsters, setMonsters] = useState<MonsterType[]>([]);
   // const [monsterDetail, setMonsterDetail] = useState<MonsterDetail>();
   // const [serverResponse, setServerResponse] = useState<ServerResponse | null>(null);
-  const [openLookDialog, setOpenLookDialog] = useState(false);
+  // const [openLookDialog, setOpenLookDialog] = useState(false);
   const [activeMonsterId, setActiveMonsterId] = useState<number | null>(null);
   // const { sendJsonMessage, lastJsonMessage } = useWebSocket(getSocketURL(), {
   //   share: true,
@@ -25,11 +25,11 @@ export const MonsterList = ({ monstersData, monsterDetailsData, sendCommand }: R
   //   },
   // });
 
-  const handleLookButtonClick = (monsterId: number) => {
-    setActiveMonsterId(monsterId); // Set the active monster ID
-    setOpenLookDialog(true); // Open the dialog
-    sendCommand(`mlook ${monsterId}`);
-  };
+  // const handleLookButtonClick = (monsterId: number) => {
+  //   setActiveMonsterId(monsterId); // Set the active monster ID
+  //   // setOpenLookDialog(true); // Open the dialog
+  //   sendCommand(`mlook ${monsterId}`, 'monsterDetails');
+  // };
 
   // useEffect(() => {
   //   if (lastJsonMessage) {
@@ -76,7 +76,7 @@ export const MonsterList = ({ monstersData, monsterDetailsData, sendCommand }: R
             </Button>
             {activeMonsterId === monster.monsterInstanceID && (
               <>
-                <Button onClick={() => handleLookButtonClick(monster.monsterInstanceID)}>
+                <Button onClick={() => sendCommand(`mlook ${monster.monsterInstanceID}`, 'monsterDetails')}>
                   {' '}
                   {/* Updated this line */}
                   Look
@@ -88,7 +88,7 @@ export const MonsterList = ({ monstersData, monsterDetailsData, sendCommand }: R
                     //   command: `mkill ${monster.monsterInstanceID}`,
                     // };
                     // sendJsonMessage(messageForServer);
-                    sendCommand(`mkill ${monster.monsterInstanceID}`);
+                    sendCommand(`mkill ${monster.monsterInstanceID}`, null);
                     setActiveMonsterId(null); // Hide the additional buttons after clicking
                   }}
                 >
@@ -101,7 +101,7 @@ export const MonsterList = ({ monstersData, monsterDetailsData, sendCommand }: R
                     //   command: `monsterToChat ${monster.monsterInstanceID}`,
                     // };
                     // sendJsonMessage(messageForServer);
-                    sendCommand(`monsterToChat ${monster.monsterInstanceID}`);
+                    sendCommand(`monsterToChat ${monster.monsterInstanceID}`, null);
                     setActiveMonsterId(null); // Hide the additional buttons after clicking
                   }}
                 >
@@ -112,10 +112,10 @@ export const MonsterList = ({ monstersData, monsterDetailsData, sendCommand }: R
           </ButtonGroup>
         ))}
       {/* Dialog for displaying monster details */}(
-      <Dialog open={openLookDialog} onClose={() => setOpenLookDialog(false)}>
+      {/* <Dialog open={openLookDialog} onClose={() => setOpenLookDialog(false)}>
         <DialogTitle id="look-dialog-title">Monster Details</DialogTitle>
         <MonsterDetailComponent monsterDetailsData={monsterDetailsData} sendCommand={sendCommand} />
-      </Dialog>
+      </Dialog> */}
       )
     </div>
   );

@@ -4,6 +4,7 @@ import useWebSocket from 'react-use-websocket';
 
 import { getSocketURL } from '../config';
 import type {
+  CharacterList,
   ClientCommand,
   ItemDetails,
   ItemsInRoomResponse,
@@ -25,6 +26,7 @@ import { PromptOutput } from './PromptOutput';
 
 export type RoomComponentProps = {
   roomData: RoomType;
+  playersData: CharacterList[];
   monstersData: MonsterType[];
   monsterDetailsData: MonsterDetail | null;
   itemsData: ItemType[];
@@ -35,6 +37,7 @@ export type RoomComponentProps = {
 
 export const RoomComponent = ({
   roomData,
+  playersData,
   monstersData,
   monsterDetailsData,
   itemsData,
@@ -122,7 +125,7 @@ export const RoomComponent = ({
           {/* The left grid, containing the prompt output and controller */}
           <Grid sx={{ maxWidth: '24%', width: '24%', height: '99%' }}>
             <PromptOutput />
-            <Controller />
+            <Controller playersData={playersData} sendCommand={sendCommand} />
           </Grid>
 
           {/* The middle grid, containing the room title, description, and item list */}
@@ -290,8 +293,15 @@ export const RoomComponent = ({
 // };
 
 // create a map of strings to lookup
-const acceptableMessageTypes = ['room', 'monstersinroom', 'monsterDetails', 'itemsinroom', 'itemDetails'];
-export type SecondaryView = null | 'monsterDetails' | 'itemDetails';
+const acceptableMessageTypes = [
+  'room',
+  'playersinroom',
+  'monstersinroom',
+  'monsterDetails',
+  'itemsinroom',
+  'itemDetails',
+];
+export type SecondaryView = null | 'monsterDetails' | 'itemDetails' | 'playerDetails';
 
 // The RoomView component fetches the room data and handles sending commands
 export const RoomView = () => {
@@ -316,6 +326,7 @@ export const RoomView = () => {
   });
 
   const [roomData, setRoomData] = useState<RoomType>({} as RoomType);
+  const [playersData, setPlayersData] = useState<CharacterList[]>([]);
   const [monstersData, setMonstersData] = useState<MonsterType[]>([]);
   const [monsterDetailsData, setMonsterDetailsData] = useState<MonsterDetail | null>(null);
   const [itemsData, setItemsData] = useState<ItemType[]>([]);
@@ -327,6 +338,9 @@ export const RoomView = () => {
       if (lastJsonMessage.type === 'room') {
         const data = lastJsonMessage as unknown as RoomType;
         setRoomData(data);
+      } else if (lastJsonMessage.type === 'playersinroom') {
+        const data = lastJsonMessage as unknown as { players: CharacterList[] };
+        setPlayersData(data.players);
       } else if (lastJsonMessage.type === 'monstersinroom') {
         const data = lastJsonMessage as unknown as MonstersInRoomResponse;
         setMonstersData(data.monsterDescriptions);
@@ -362,6 +376,7 @@ export const RoomView = () => {
   return (
     <RoomComponent
       roomData={roomData}
+      playersData={playersData}
       monstersData={monstersData}
       monsterDetailsData={monsterDetailsData}
       itemsData={itemsData}

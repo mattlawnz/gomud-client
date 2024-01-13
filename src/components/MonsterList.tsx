@@ -4,12 +4,12 @@ import { useState } from 'react';
 import type { MonsterType } from '../types';
 import type { SecondaryView } from './Room';
 
-export type RoomComponentProps = {
+export type MonsterComponentProps = {
   monstersData: MonsterType[];
   // monsterDetailsData: MonsterDetail | null;
   sendCommand: (_command: string, _secondaryView: SecondaryView) => void;
 };
-export const MonsterList = ({ monstersData, sendCommand }: RoomComponentProps) => {
+export const MonsterList = ({ monstersData, sendCommand }: MonsterComponentProps) => {
   // const [monsters, setMonsters] = useState<MonsterType[]>([]);
   // const [monsterDetail, setMonsterDetail] = useState<MonsterDetail>();
   // const [serverResponse, setServerResponse] = useState<ServerResponse | null>(null);

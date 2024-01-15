@@ -6,6 +6,7 @@ import { getSocketURL } from '../config';
 import type {
   CharacterList,
   ClientCommand,
+  ExitsResponse,
   ItemDetails,
   ItemsInRoomResponse,
   ItemType,
@@ -31,6 +32,7 @@ export type RoomComponentProps = {
   monsterDetailsData: MonsterDetail | null;
   itemsData: ItemType[];
   itemDetailsData: ItemDetails | null;
+  exitsData: { [direction: string]: string };
   sendCommand: (_command: string, _secondaryView: SecondaryView) => void;
   secondaryView: SecondaryView;
 };
@@ -42,6 +44,7 @@ export const RoomComponent = ({
   monsterDetailsData,
   itemsData,
   itemDetailsData,
+  exitsData,
   sendCommand,
   secondaryView,
 }: RoomComponentProps) => {
@@ -265,7 +268,7 @@ export const RoomComponent = ({
               width: '100%',
             }}
           >
-            <ActionButtonsRight />
+            <ActionButtonsRight exitsData={exitsData} sendCommand={sendCommand} />
           </Grid>
         </Grid>
         {/* <DummyLookCommandComponent sendCommand={sendCommand} />; */}
@@ -300,6 +303,7 @@ const acceptableMessageTypes = [
   'monsterDetails',
   'itemsinroom',
   'itemDetails',
+  'exits',
 ];
 export type SecondaryView = null | 'monsterDetails' | 'itemDetails' | 'playerDetails';
 
@@ -330,6 +334,7 @@ export const RoomView = () => {
   const [monstersData, setMonstersData] = useState<MonsterType[]>([]);
   const [monsterDetailsData, setMonsterDetailsData] = useState<MonsterDetail | null>(null);
   const [itemsData, setItemsData] = useState<ItemType[]>([]);
+  const [exitsData, setExitsData] = useState<{ [direction: string]: string }>({});
   const [itemDetailsData, setItemDetailsData] = useState<ItemDetails | null>(null);
   const [secondaryView, setSecondaryView] = useState<SecondaryView>(null);
 
@@ -353,6 +358,9 @@ export const RoomView = () => {
       } else if (lastJsonMessage.type === 'itemDetails') {
         const data = lastJsonMessage as unknown as ItemDetails;
         setItemDetailsData(data);
+      } else if (lastJsonMessage.type === 'exits') {
+        const data = lastJsonMessage as unknown as ExitsResponse;
+        setExitsData(data.exits);
       }
     }
   }, [lastJsonMessage, setRoomData]);
@@ -381,6 +389,7 @@ export const RoomView = () => {
       monsterDetailsData={monsterDetailsData}
       itemsData={itemsData}
       itemDetailsData={itemDetailsData}
+      exitsData={exitsData}
       sendCommand={sendCommand}
       secondaryView={secondaryView}
     />

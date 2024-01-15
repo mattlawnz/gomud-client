@@ -1,29 +1,13 @@
 import { Box, Button, Grid } from '@mui/material';
-import { useEffect, useState } from 'react';
-import useWebSocket from 'react-use-websocket';
 
-import { getSocketURL } from '../config';
-import type { ClientCommand, ExitsResponse, ServerResponse } from '../types';
+import type { SecondaryView } from './Room';
 
-export const ActionButtonsRight = () => {
-  const { sendJsonMessage, lastJsonMessage } = useWebSocket(getSocketURL(), {
-    share: true,
-    filter(message: WebSocketEventMap['message']) {
-      const serverResponse = JSON.parse(message.data) as ServerResponse;
-      return serverResponse.type === 'exits';
-    },
-  });
+export type ActionButtonsRightProps = {
+  exitsData: { [direction: string]: string };
+  sendCommand: (_command: string, _secondaryView: SecondaryView) => void;
+};
 
-  const [exits, setExits] = useState<{ [direction: string]: string }>({});
-
-  const sendCommand = (commandValue: string) => {
-    const messageForServer: ClientCommand = {
-      type: 'command',
-      command: commandValue,
-    };
-    sendJsonMessage(messageForServer);
-  };
-
+export const ActionButtonsRight = ({ exitsData, sendCommand }: ActionButtonsRightProps) => {
   const buttonStyle = {
     fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem', xl: '1.5rem' },
     padding: { xs: '8px 16px', sm: '10px 20px', md: '12px 24px', xl: '16px 30px' },
@@ -35,12 +19,8 @@ export const ActionButtonsRight = () => {
     },
   };
 
-  useEffect(() => {
-    if (lastJsonMessage !== null) {
-      const exitsResponse = lastJsonMessage as ExitsResponse;
-      setExits(exitsResponse.exits);
-    }
-  }, [lastJsonMessage]);
+  // make sure to fall back to an empty object if no exit data is available
+  const exits = exitsData ? exitsData : {};
 
   return (
     <Box
@@ -56,12 +36,22 @@ export const ActionButtonsRight = () => {
     >
       <Grid container spacing={1}>
         <Grid item xs={12} container justifyContent="center">
-          <Button sx={buttonStyle} variant="contained" onClick={() => sendCommand('go up')} disabled={!exits['up']}>
+          <Button
+            sx={buttonStyle}
+            variant="contained"
+            onClick={() => sendCommand('go up', null)}
+            disabled={!exits['up']}
+          >
             Up
           </Button>
         </Grid>
         <Grid item xs={4} container justifyContent="center">
-          <Button sx={buttonStyle} variant="contained" onClick={() => sendCommand('go west')} disabled={!exits['west']}>
+          <Button
+            sx={buttonStyle}
+            variant="contained"
+            onClick={() => sendCommand('go west', null)}
+            disabled={!exits['west']}
+          >
             W
           </Button>
         </Grid>
@@ -69,14 +59,19 @@ export const ActionButtonsRight = () => {
           <Button
             sx={buttonStyle}
             variant="contained"
-            onClick={() => sendCommand('go north')}
+            onClick={() => sendCommand('go north', null)}
             disabled={!exits['north']}
           >
             N
           </Button>
         </Grid>
         <Grid item xs={4} container justifyContent="center">
-          <Button sx={buttonStyle} variant="contained" onClick={() => sendCommand('go east')} disabled={!exits['east']}>
+          <Button
+            sx={buttonStyle}
+            variant="contained"
+            onClick={() => sendCommand('go east', null)}
+            disabled={!exits['east']}
+          >
             E
           </Button>
         </Grid>
@@ -84,14 +79,19 @@ export const ActionButtonsRight = () => {
           <Button
             sx={buttonStyle}
             variant="contained"
-            onClick={() => sendCommand('go south')}
+            onClick={() => sendCommand('go south', null)}
             disabled={!exits['south']}
           >
             S
           </Button>
         </Grid>
         <Grid item xs={12} container justifyContent="center">
-          <Button sx={buttonStyle} variant="contained" onClick={() => sendCommand('go down')} disabled={!exits['down']}>
+          <Button
+            sx={buttonStyle}
+            variant="contained"
+            onClick={() => sendCommand('go down', null)}
+            disabled={!exits['down']}
+          >
             Down
           </Button>
         </Grid>

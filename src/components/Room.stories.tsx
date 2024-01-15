@@ -317,6 +317,59 @@ const itemDetailsOption = {
   },
 };
 
+const exitsOptions = {
+  null: null,
+  'no-exits': {},
+  north: {
+    north: {
+      roomID: 1,
+      roomTitle: 'The large hall',
+    },
+  },
+  'north-south': {
+    north: {
+      roomID: 1,
+      roomTitle: 'The large hall',
+    },
+    south: {
+      roomID: 2,
+      roomTitle: 'south - room 2',
+    },
+  },
+  'north-south-east': {
+    north: {
+      roomID: 1,
+      roomTitle: 'The large hall',
+    },
+    south: {
+      roomID: 2,
+      roomTitle: 'south - room 2',
+    },
+    east: {
+      roomID: 3,
+      roomTitle: 'east - roomm 3',
+    },
+  },
+  'north-south-east-west': {
+    north: {
+      roomID: 1,
+      roomTitle: 'The large hall',
+    },
+    south: {
+      roomID: 2,
+      roomTitle: 'south - room 2',
+    },
+    east: {
+      roomID: 3,
+      roomTitle: 'east - roomm 3',
+    },
+    west: {
+      roomID: 4,
+      roomTitle: 'west - room 4',
+    },
+  },
+};
+
 const secondaryViewOptions = {
   null: null,
   playerDetails: 'playerDetails',
@@ -369,6 +422,13 @@ const meta: Meta<typeof RoomComponent> = {
         type: 'select',
       },
     },
+    exitsData: {
+      options: Object.keys(exitsOptions),
+      mapping: exitsOptions,
+      control: {
+        type: 'select',
+      },
+    },
     secondaryView: {
       options: Object.keys(secondaryViewOptions),
       mapping: secondaryViewOptions,
@@ -378,10 +438,6 @@ const meta: Meta<typeof RoomComponent> = {
     },
   },
   args: {
-    // roomData: roomOptions['a-simple-room'],
-    // playersData: playersOptions['one-player'],
-    // monstersData: monstersOptions['one-monster'],
-    // itemData: itemsOptions['one-item'],
     sendCommand: (command: string) => {
       console.log(`sendCommand: ${command}`);
     },

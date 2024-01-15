@@ -60,6 +60,8 @@ export const MiniMap: React.FC = () => {
 
   useEffect(() => {
     if (lastJsonMessage) {
+      // lgo to console
+      console.log(lastJsonMessage);
       const serverResponse = lastJsonMessage as unknown as ServerResponse;
       const data: UpdateMapType = JSON.parse(serverResponse.message);
 

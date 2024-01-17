@@ -28,7 +28,7 @@ export const ActionButtons = () => {
       // the filter function should only return true or false indicating whether this component is intersted in that type or not
       // and useEffect should be used to assign values to state according to the type of the message
       setServerResponse(serverResponse);
-      console.log('response', serverResponse);
+      // console.log('response', serverResponse);
       return serverResponse.type === 'exits';
     },
   });

@@ -1,49 +1,17 @@
 import { List, ListItem, ListItemText, Paper, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
-import useWebSocket from 'react-use-websocket';
 
-import { getSocketURL } from '../config';
-import type { ClientCommand, ItemDetails, ServerResponse } from '../types';
+import type { ItemDetails } from '../types';
+import type { SecondaryView } from './Room';
 
 type ItemDetailsProps = {
-  itemId: number | null;
-  // eslint-disable-next-line no-unused-vars
-  sendJsonMessage: (message: ClientCommand) => void;
+  // itemId: number | null;
+  // // eslint-disable-next-line no-unused-vars
+  // sendJsonMessage: (message: ClientCommand) => void;
+  itemDetailsData: ItemDetails | null;
+  sendCommand: (_command: string, _secondaryView: SecondaryView) => void;
 };
 
-export const ItemDetailsComponent = ({ itemId }: ItemDetailsProps) => {
-  const [itemDetails, setItemDetails] = useState<ItemDetails | null>(null);
-
-  const { sendJsonMessage, lastJsonMessage } = useWebSocket(getSocketURL(), {
-    share: true,
-    filter(message: WebSocketEventMap['message']) {
-      const serverResponse = JSON.parse(message.data) as ServerResponse;
-      console.log('itemDetails Response:', serverResponse);
-      return serverResponse.type === 'itemDetails';
-    },
-  });
-
-  useEffect(() => {
-    if (lastJsonMessage) {
-      const detail = lastJsonMessage as ItemDetails;
-      setItemDetails(detail);
-      console.log('itemDetails:', detail);
-      // log the itemID to the console
-      // console.log('itemID:', itemID);
-    }
-  }, [lastJsonMessage]);
-
-  useEffect(() => {
-    if (itemId !== null) {
-      const messageForServer: ClientCommand = {
-        type: 'command',
-        command: `ilook ${itemId}`,
-      };
-      sendJsonMessage(messageForServer);
-      console.log('Message for SErver itemDetails:', messageForServer);
-    }
-  }, [itemId, sendJsonMessage]);
-
+export const ItemDetailsComponent = ({ itemDetailsData: itemDetails }: ItemDetailsProps) => {
   if (!itemDetails) {
     return <Typography>No item details available.</Typography>;
   }

@@ -1,11 +1,18 @@
 /* eslint-disable prettier/prettier */
 import { Grid } from '@mui/material';
 
+import type { CharacterList } from '../types';
 import { Characters } from './CharacterList';
 import { FightsList } from './Fights';
 import { QuestList } from './QuestList';
+import type { SecondaryView } from './Room';
 
-const Controller = () => {
+export type ControllerComponentProps = {
+  playersData: CharacterList[];
+  sendCommand: (_command: string, _secondaryView: SecondaryView) => void;
+};
+
+const Controller = ({ playersData, sendCommand }: ControllerComponentProps) => {
   return (
     <Grid
       spacing={3}
@@ -34,7 +41,7 @@ const Controller = () => {
           },
         }}
       >
-        <Characters />
+        <Characters playersData={playersData} sendCommand={sendCommand} />
         <FightsList />
         <QuestList />
       </Grid>

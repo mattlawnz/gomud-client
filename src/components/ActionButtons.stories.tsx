@@ -15,5 +15,11 @@ type Story = StoryObj<typeof ActionButtons>;
  * to learn how to use render functions.
  */
 export const Primary: Story = {
-  render: () => <ActionButtons />,
+  render: () => (
+    <ActionButtons
+      toggleFullScreen={function (): void {
+        throw new Error('Function not implemented.');
+      }}
+    />
+  ),
 };

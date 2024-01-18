@@ -1,3 +1,4 @@
+import { OpenInFullRounded } from '@mui/icons-material';
 import CloseIcon from '@mui/icons-material/Close';
 import { AppBar, Button, Dialog, DialogTitle, Grid, IconButton, Toolbar } from '@mui/material';
 import React, { useState } from 'react';
@@ -11,7 +12,11 @@ import { EquipmentComponent } from './Equipment';
 import { InventoryComponent } from './Inventory';
 import { SkillTreeComponent } from './SkillTree';
 
-export const ActionButtons = () => {
+export type ActionButtonsProps = {
+  toggleFullScreen: () => void;
+};
+
+export const ActionButtons = ({ toggleFullScreen }: ActionButtonsProps) => {
   const [openPracticeDialog, setOpenPracticeDialog] = useState(false);
   const [openScoreDialog, setOpenScoreDialog] = useState(false); // New state for score dialog
   const [openEquipmentDialog, setOpenEquipmentDialog] = useState(false); // New state for equipment dialog
@@ -94,6 +99,11 @@ export const ActionButtons = () => {
       <Grid container spacing={2} justifyContent="center" alignItems="center">
         {/* Row for other actions */}
         <Grid item xs={12} sx={{ width: '100%' }}>
+          {' '}
+          <IconButton color="secondary" aria-label="enable fullscreen" onClick={toggleFullScreen}>
+            <OpenInFullRounded />
+            FullScreen
+          </IconButton>
           <CustomStyledItem>
             <Button
               variant="contained"

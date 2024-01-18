@@ -1,11 +1,14 @@
 import { AppBar, Box, Toolbar, useMediaQuery, useTheme } from '@mui/material';
-import type React from 'react';
 
 import { AuthStatus } from './AuthStatus';
 import { ActionButtons } from './components/ActionButtons';
 import { PromptOutput } from './components/PromptOutput';
 
-export const LeftAppBar: React.FC = () => {
+export type LeftAppBarProps = {
+  toggleFullScreen: () => void;
+};
+
+export const LeftAppBar = ({ toggleFullScreen }: LeftAppBarProps) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -30,7 +33,7 @@ export const LeftAppBar: React.FC = () => {
           <PromptOutput />
         </Box>
         <Box>
-          <ActionButtons />
+          <ActionButtons toggleFullScreen={toggleFullScreen} />
           <AuthStatus />
         </Box>
       </Toolbar>

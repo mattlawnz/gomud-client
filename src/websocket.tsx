@@ -2,7 +2,7 @@ import ChatIcon from '@mui/icons-material/Chat';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Box, createTheme, Drawer, Grid, IconButton, Modal, ThemeProvider } from '@mui/material';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
 import { MyBottomNavigation, SkillsContext } from './components/BottomNavigation';
@@ -32,6 +32,8 @@ interface WebSocketComponentProps {
 }
 
 export const WebSocketComponent = (props: WebSocketComponentProps) => {
+  const [isFullscreen, setIsFullscreen] = React.useState(false);
+
   const [character] = useState(props.character);
   const [skills, setSkills] = useState({});
 
@@ -62,6 +64,10 @@ export const WebSocketComponent = (props: WebSocketComponentProps) => {
     setIsChatOpen(!isChatOpen);
   };
 
+  const toggleFullScreen = () => {
+    setIsFullscreen(!isFullscreen);
+  };
+
   useEffect(() => {
     if (lastJsonMessage !== null) {
       if ((lastJsonMessage as ServerResponse).type === 'characterUUID') {
@@ -73,6 +79,23 @@ export const WebSocketComponent = (props: WebSocketComponentProps) => {
       }
     }
   }, [character, lastJsonMessage, sendJsonMessage]);
+
+  useEffect(() => {
+    if (isFullscreen) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  }, [isFullscreen]);
+
+  // Watch for fullscreenchange
+  useEffect(() => {
+    function onFullscreenChange() {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    }
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', onFullscreenChange);
+  }, []);
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -108,7 +131,7 @@ export const WebSocketComponent = (props: WebSocketComponentProps) => {
               },
             }}
           >
-            <LeftAppBar />
+            <LeftAppBar toggleFullScreen={toggleFullScreen} />
             <CommandPrompt />
           </Drawer>
 

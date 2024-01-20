@@ -1,16 +1,35 @@
-import type { FightSummary, ServerResponse } from '../types';
+import type { FightSummary } from '../types';
+import type { SecondaryView } from './Room';
+
+// type FightSummaryProps = {
+//   serverResponse: ServerResponse;
+// };
 
 type FightSummaryProps = {
-  serverResponse: ServerResponse;
+  // itemId: number | null;
+  // // eslint-disable-next-line no-unused-vars
+  // sendJsonMessage: (message: ClientCommand) => void;
+  fightSummaryData: FightSummary | null;
+  sendCommand: (_command: string, _secondaryView: SecondaryView) => void;
 };
 
-export const FightSummaryComponent = (props: FightSummaryProps) => {
-  const fightSummary = props.serverResponse as unknown as FightSummary;
+// export const ItemDetailsComponent = ({ itemDetailsData: itemDetails }: ItemDetailsProps) => {
+//   if (!itemDetails) {
+//     return <Typography>No item details available.</Typography>;
+//   }
 
+//   const formatAttribute = (value: number) => (value >= 0 ? `+${value}` : `${value}`);
+
+export const FightSummaryComponent = ({ fightSummaryData: fightSummary }: FightSummaryProps) => {
   if (!fightSummary) {
-    //    console.log('Fight summary is null'); // Debug log
-    return null; // or a loading state
+    return <div>No fight summary available.</div>;
   }
+  // const fightSummary = props.serverResponse as unknown as FightSummary;
+
+  // if (!fightSummary) {
+  //   //    console.log('Fight summary is null'); // Debug log
+  //   return null; // or a loading state
+  // }
 
   return (
     <div style={{ textAlign: 'left' }}>

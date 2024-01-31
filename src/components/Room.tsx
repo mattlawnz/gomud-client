@@ -7,6 +7,7 @@ import type {
   CharacterList,
   ClientCommand,
   ExitsResponse,
+  FightSummary,
   ItemDetails,
   ItemsInRoomResponse,
   ItemType,
@@ -19,6 +20,7 @@ import type {
 import { ActionButtonsRight } from './ActionButtonsRight';
 import { Consumables } from './Consumables';
 import Controller from './Controller';
+import { FightSummaryComponent } from './FightSummary';
 import { ItemDetailsComponent } from './ItemDetails';
 import { ItemList } from './ItemList';
 import { MonsterDetailComponent } from './MonsterDetails';
@@ -32,6 +34,7 @@ export type RoomComponentProps = {
   monsterDetailsData: MonsterDetail | null;
   itemsData: ItemType[];
   itemDetailsData: ItemDetails | null;
+  fightSummaryData: FightSummary | null;
   exitsData: { [direction: string]: string };
   sendCommand: (_command: string, _secondaryView: SecondaryView) => void;
   secondaryView: SecondaryView;
@@ -44,6 +47,7 @@ export const RoomComponent = ({
   monsterDetailsData,
   itemsData,
   itemDetailsData,
+  fightSummaryData,
   exitsData,
   sendCommand,
   secondaryView,
@@ -80,6 +84,13 @@ export const RoomComponent = ({
       <React.Fragment>
         <DialogTitle id="look-dialog-title">Item Details</DialogTitle>
         <ItemDetailsComponent itemDetailsData={itemDetailsData} sendCommand={sendCommand} />
+      </React.Fragment>
+    );
+  } else if (secondaryView === 'fightSummary') {
+    secondaryViewComponent = (
+      <React.Fragment>
+        <DialogTitle id="look-dialog-title">Fight Summary</DialogTitle>
+        <FightSummaryComponent fightSummaryData={fightSummaryData} sendCommand={sendCommand} />
       </React.Fragment>
     );
   }
@@ -303,9 +314,10 @@ const acceptableMessageTypes = [
   'monsterDetails',
   'itemsinroom',
   'itemDetails',
+  'fightSummary',
   'exits',
 ];
-export type SecondaryView = null | 'monsterDetails' | 'itemDetails' | 'playerDetails';
+export type SecondaryView = null | 'monsterDetails' | 'itemDetails' | 'fightSummary' | 'playerDetails';
 
 // The RoomView component fetches the room data and handles sending commands
 export const RoomView = () => {
@@ -336,6 +348,7 @@ export const RoomView = () => {
   const [itemsData, setItemsData] = useState<ItemType[]>([]);
   const [exitsData, setExitsData] = useState<{ [direction: string]: string }>({});
   const [itemDetailsData, setItemDetailsData] = useState<ItemDetails | null>(null);
+  const [fightSummaryData, setFightSummaryData] = useState<FightSummary | null>(null);
   const [secondaryView, setSecondaryView] = useState<SecondaryView>(null);
 
   useEffect(() => {
@@ -361,6 +374,9 @@ export const RoomView = () => {
       } else if (lastJsonMessage.type === 'exits') {
         const data = lastJsonMessage as unknown as ExitsResponse;
         setExitsData(data.exits);
+      } else if (lastJsonMessage.type === 'fightSummary') {
+        const data = lastJsonMessage as unknown as FightSummary;
+        setFightSummaryData(data);
       }
     }
   }, [lastJsonMessage, setRoomData]);
@@ -389,6 +405,7 @@ export const RoomView = () => {
       monsterDetailsData={monsterDetailsData}
       itemsData={itemsData}
       itemDetailsData={itemDetailsData}
+      fightSummaryData={fightSummaryData}
       exitsData={exitsData}
       sendCommand={sendCommand}
       secondaryView={secondaryView}

@@ -1,4 +1,5 @@
 import { Button, ButtonGroup } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
 import { useState } from 'react';
 
 import type { MonsterType } from '../types';
@@ -56,22 +57,30 @@ export const MonsterList = ({ monstersData, sendCommand }: MonsterComponentProps
   // }, [lastJsonMessage]);
 
   return (
-    // <div style={{ height: '14%', textAlign: 'left', border: '1px solid white', background: 'rgba(0, 0, 0, 0.5)' }}>
     <div>
-      {/* Apply left alignment here */}
       {monstersData &&
         monstersData.map((monster, idx) => (
           <ButtonGroup
             key={idx}
             variant="text"
-            style={{ justifyContent: 'flex-start', display: 'block', marginBottom: '10px' }} // Added display and marginBottom
+            style={{ justifyContent: 'flex-start', display: 'block', marginBottom: '10px' }}
           >
             <Button
               onClick={() =>
                 setActiveMonsterId(activeMonsterId === monster.monsterInstanceID ? null : monster.monsterInstanceID)
               }
             >
-              {monster.shortDescription + ' (HP: ' + monster.currentHealthPoints + ')'}
+              {/* Use Avatar for monster icon */}
+              <Avatar
+                src={monster.monsterIcon ? `/images/${monster.monsterIcon}` : ''}
+                alt={monster.monsterName}
+                style={{ width: '50px', height: '50px', marginRight: '10px' }}
+              >
+                {/* Display the monster's name if there's no icon */}
+                {!monster.monsterIcon && monster.monsterName}
+              </Avatar>
+              {/* <span>{monster.shortDescription + ' (HP: ' + monster.currentHealthPoints + ')'}</span> */}
+              <span>{monster.shortDescription}</span>
             </Button>
             {activeMonsterId === monster.monsterInstanceID && (
               <>
@@ -82,11 +91,6 @@ export const MonsterList = ({ monstersData, sendCommand }: MonsterComponentProps
                 </Button>
                 <Button
                   onClick={() => {
-                    // const messageForServer: ClientCommand = {
-                    //   type: 'command',
-                    //   command: `mkill ${monster.monsterInstanceID}`,
-                    // };
-                    // sendJsonMessage(messageForServer);
                     sendCommand(`mkill ${monster.monsterInstanceID}`, null);
                     setActiveMonsterId(null); // Hide the additional buttons after clicking
                   }}

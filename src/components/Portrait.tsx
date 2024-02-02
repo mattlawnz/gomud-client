@@ -32,14 +32,17 @@ export const Portrait = () => {
     return <React.Fragment></React.Fragment>;
   }
 
-  // Portrait element
+  // Adjust the borderRadius to match your desired rounded shape instead of making it circular
+  const borderRadiusStyle = '10%'; // Example of slightly rounded corners; adjust as needed
+
   let portraitElement = <React.Fragment></React.Fragment>;
   if (currentMessage.type === 'portrait') {
     portraitElement = (
       <Avatar
         src={currentMessage.message}
         alt="Character Portrait"
-        sx={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+        sx={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: borderRadiusStyle }}
+        variant="rounded"
       />
     );
   } else {
@@ -47,7 +50,8 @@ export const Portrait = () => {
       <Avatar
         src={elfFemale1Image}
         alt="Character Portrait"
-        sx={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+        sx={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: borderRadiusStyle }}
+        variant="rounded"
       />
     );
   }

@@ -1,5 +1,4 @@
-import { Avatar, Box, IconButton, Typography, useMediaQuery } from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
+import { Avatar, Box, IconButton, LinearProgress, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
@@ -9,32 +8,16 @@ import type { ClientCommand, Prompt, PromptResponse } from '../types';
 import { GroupMembers } from './GroupMembers';
 import { Portrait } from './Portrait';
 
-type CircularProgressWithLabelProps = {
+type LinearProgressWithLabelProps = {
   value: number;
 };
 
-function CircularProgressWithLabel(props: CircularProgressWithLabelProps) {
-  const isMobile = useMediaQuery('(max-width:768px)');
-  const size = isMobile ? 60 : 100;
+function LinearProgressWithLabel(props: LinearProgressWithLabelProps) {
   return (
-    <Box position="relative" display="inline-flex">
-      <CircularProgress variant="determinate" {...props} size={size} />
-      <Box
-        top={0}
-        left={0}
-        bottom={0}
-        right={0}
-        position="absolute"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Avatar variant="circular" sx={{ width: '80%', height: '80%' }}>
-          <Portrait />
-        </Avatar>
-        <Typography variant="caption" component="div" color="text.secondary" sx={{ position: 'absolute', bottom: 5 }}>
-          {`${Math.round(props.value)}%`}
-        </Typography>
+    <Box sx={{ width: '100%', mr: 1 }}>
+      <LinearProgress variant="determinate" {...props} />
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Typography variant="body2" color="text.secondary">{`${Math.round(props.value)}%`}</Typography>
       </Box>
     </Box>
   );
@@ -83,11 +66,19 @@ export const PromptOutput = () => {
       sx={{
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'space-between', // Ensure the items are spaced out full width
         marginBottom: '5px',
+        padding: '0', // Make sure there's no padding reducing the inner width
       }}
     >
-      <Box display="flex" flexDirection="column" alignItems="center">
-        <CircularProgressWithLabel value={healthPercentage} />
+      <Box display="flex" flexDirection="column" alignItems="center" sx={{ width: '100%', padding: '0' }}>
+        <Avatar variant="rounded" sx={{ width: 60, height: 60, marginBottom: 1 }}>
+          <Portrait />
+        </Avatar>
+        {/* Adjust the width of LinearProgressWithLabel container */}
+        <Box sx={{ width: '100%', padding: '0' }}>
+          <LinearProgressWithLabel value={healthPercentage} />
+        </Box>
         <GroupMembers />
       </Box>
       <Box>

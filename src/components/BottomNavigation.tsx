@@ -3,7 +3,7 @@ import { createContext, useEffect, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
 
 import { getSocketURL } from '../config';
-import type { ClientCommand, MonsterType, ServerResponse, Skill, SkillData } from '../types';
+import type { MonsterType, ServerResponse, Skill, SkillData } from '../types';
 
 type SkillsContextType = {
   skills: { [key: string]: Skill };
@@ -47,7 +47,7 @@ export const MyBottomNavigation = () => {
         newSkills[skill.name] = {
           ...skill,
           lastUsed: 0,
-          buttonText: skill.name,
+          buttonText: `${skill.name} (${skill.cooldown / 1000000000} sec)`,
           isAvailable: true,
         };
       });
@@ -59,60 +59,93 @@ export const MyBottomNavigation = () => {
     }
   }, [lastJsonMessage]);
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const now = Date.now();
+      let updated = false;
+
+      const newSkills = Object.entries(skills).reduce<Record<string, Skill>>((acc, [name, skill]) => {
+        if (skill.lastUsed > 0) {
+          const timePassedSec = (now - skill.lastUsed) / 1000; // Convert milliseconds to seconds for time passed
+          const cooldownSec = skill.cooldown / 1000000000; // Convert nanoseconds to seconds for cooldown
+          const remainingCooldown = cooldownSec - timePassedSec;
+          if (remainingCooldown <= 0) {
+            // Cooldown has expired, so update skill to be available again
+            acc[name] = {
+              ...skill,
+              lastUsed: 0,
+              buttonText: `${skill.name} (${skill.cooldown / 1000000000} sec)`,
+              isAvailable: true,
+            };
+            updated = true;
+          } else {
+            // Cooldown is still ongoing, update buttonText and keep it disabled
+            acc[name] = {
+              ...skill,
+              buttonText: `${skill.name} (${remainingCooldown.toFixed(1)}s)`,
+              isAvailable: false,
+            };
+            updated = true;
+          }
+        } else {
+          // No cooldown, skill should remain unchanged
+          acc[name] = skill;
+        }
+        return acc;
+      }, {});
+
+      if (updated) {
+        setSkills(newSkills);
+      }
+    }, 1000); // Every second
+
+    return () => clearInterval(intervalId);
+  }, [skills]);
+
   const handleSkillUse = (skillName: string, monsterName: string) => {
-    const messageForServer: ClientCommand = {
+    // Existing logic to send command to server
+    sendJsonMessage({
       type: 'command',
       command: `useSkill ${skillName} ${monsterName}`,
-    };
+    });
 
-    console.log('messageForServer', messageForServer);
-    sendJsonMessage(messageForServer);
+    // Set lastUsed to current time to start cooldown
+    setSkills((prevSkills) => ({
+      ...prevSkills,
+      [skillName]: {
+        ...prevSkills[skillName],
+        lastUsed: Date.now(),
+        isAvailable: false, // Immediately set isAvailable to false
+      },
+    }));
 
-    // Reset the UI
+    // Existing logic to reset UI
     setShowMonsters(false);
     setSelectedSkill(null);
   };
 
-  const skillButtons = Object.keys(skills)
-    .filter((skillName) => skills[skillName].isAvailable)
-    .map((skillName) => {
-      return (
-        <Button
-          key={skillName}
-          variant="contained"
-          color="primary"
-          sx={{
-            '@media (min-width: 1440px)': {
-              fontSize: '26px !important',
-            },
-            '@media (min-width: 1996px)': {
-              fontSize: '30px !important',
-            },
-          }}
-          onClick={() => handleSkillClick(skillName)}
-        >
-          {skills[skillName].buttonText}
-        </Button>
-      );
-    });
-
-  // const handleSkillUse = (skillName: string, monsterName?: string) => {
-  //   const target = monsterName || 'goblin'; // default to 'goblin'
-  //   const messageForServer: ClientCommand = {
-  //     type: 'command',
-  //     command: `useSkill ${skillName} ${target}`,
-  //   };
-  //   console.log('messageForServer', messageForServer);
-  //   sendJsonMessage(messageForServer);
-
-  //   setSkills((prevSkills) => ({
-  //     ...prevSkills,
-  //     [skillName]: {
-  //       ...prevSkills[skillName],
-  //       lastUsed: Date.now(),
-  //     },
-  //   }));
-  // };
+  const skillButtons = Object.keys(skills).map((skillName) => {
+    const skill = skills[skillName];
+    return (
+      <Button
+        key={skillName}
+        variant="contained"
+        color="primary"
+        disabled={!skill.isAvailable} // Disable button if skill is not available
+        sx={{
+          '@media (min-width: 1440px)': {
+            fontSize: '26px !important',
+          },
+          '@media (min-width: 1996px)': {
+            fontSize: '30px !important',
+          },
+        }}
+        onClick={() => handleSkillClick(skillName)}
+      >
+        {skill.buttonText}
+      </Button>
+    );
+  });
 
   return (
     <Box

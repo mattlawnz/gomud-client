@@ -1,5 +1,7 @@
-import { Box, Button } from '@mui/material';
-import { useFetcher, useRouteLoaderData } from 'react-router-dom';
+import FollowTheSignsIcon from '@mui/icons-material/FollowTheSigns';
+import { Box, Button, IconButton } from '@mui/material';
+import React from 'react';
+import { Link, useFetcher, useRouteLoaderData } from 'react-router-dom';
 
 import type { RouterRootData } from './types';
 
@@ -28,11 +30,32 @@ export function AuthStatus() {
   const isLoggingOut = fetcher.formData != null;
 
   return (
-    <Box>
-      <fetcher.Form method="post" action="/logout">
-        <Button
-          type="submit"
-          disabled={isLoggingOut}
+    <React.Fragment>
+      <Link to="/dashboard/character-select">
+        <IconButton color="secondary">
+          <FollowTheSignsIcon />
+          Change Character
+        </IconButton>
+      </Link>
+
+      <Box>
+        <fetcher.Form method="post" action="/logout">
+          <Button
+            type="submit"
+            disabled={isLoggingOut}
+            sx={{
+              '@media (min-width: 1440px)': {
+                fontSize: '26px !important',
+              },
+              '@media (min-width: 1996px)': {
+                fontSize: '30px !important',
+              },
+            }}
+          >
+            {isLoggingOut ? 'Signing out...' : 'Sign out'}
+          </Button>
+        </fetcher.Form>
+        <Box
           sx={{
             '@media (min-width: 1440px)': {
               fontSize: '26px !important',
@@ -42,21 +65,9 @@ export function AuthStatus() {
             },
           }}
         >
-          {isLoggingOut ? 'Signing out...' : 'Sign out'}
-        </Button>
-      </fetcher.Form>
-      <Box
-        sx={{
-          '@media (min-width: 1440px)': {
-            fontSize: '26px !important',
-          },
-          '@media (min-width: 1996px)': {
-            fontSize: '30px !important',
-          },
-        }}
-      >
-        Welcome {user}!
+          Welcome {user}!
+        </Box>
       </Box>
-    </Box>
+    </React.Fragment>
   );
 }

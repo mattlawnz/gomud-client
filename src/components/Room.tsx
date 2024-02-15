@@ -20,6 +20,7 @@ import type {
 import { ActionButtonsRight } from './ActionButtonsRight';
 import { Consumables } from './Consumables';
 import Controller from './Controller';
+import { FightView } from './Fight';
 import { FightSummaryComponent } from './FightSummary';
 import { ItemDetailsComponent } from './ItemDetails';
 import { ItemList } from './ItemList';
@@ -37,6 +38,7 @@ export type RoomComponentProps = {
   fightSummaryData: FightSummary | null;
   exitsData: { [direction: string]: string };
   sendCommand: (_command: string, _secondaryView: SecondaryView) => void;
+  primaryView: PrimaryView;
   secondaryView: SecondaryView;
 };
 
@@ -50,6 +52,7 @@ export const RoomComponent = ({
   fightSummaryData,
   exitsData,
   sendCommand,
+  primaryView,
   secondaryView,
 }: RoomComponentProps) => {
   const [openLookDialog, setOpenLookDialog] = useState(false);
@@ -69,7 +72,37 @@ export const RoomComponent = ({
       </Box>
     );
   }
+  console.log('Primary View:', primaryView);
   const backgroundImage = roomData.icon ? `url(src/assets/images/${roomData.icon})` : 'none';
+
+  let primaryViewComponent = <React.Fragment></React.Fragment>;
+  if (primaryView === 'room') {
+    primaryViewComponent = (
+      <Typography
+        id="room-description"
+        variant="body1"
+        component="p"
+        align="left"
+        color="white"
+        sx={{
+          '@media (min-width: 1440px)': {
+            fontSize: '18px !important',
+          },
+          '@media (min-width: 1996px)': {
+            fontSize: '34px !important',
+          },
+        }}
+      >
+        {roomData.description}
+      </Typography>
+    );
+  } else if (primaryView === 'fight') {
+    primaryViewComponent = (
+      <React.Fragment>
+        <FightView />
+      </React.Fragment>
+    );
+  }
 
   let secondaryViewComponent = <React.Fragment></React.Fragment>;
   if (secondaryView === 'monsterDetails') {
@@ -172,23 +205,7 @@ export const RoomComponent = ({
               >
                 {roomData.title}
               </Typography>
-              <Typography
-                id="room-description"
-                variant="body1"
-                component="p"
-                align="left"
-                color="white"
-                sx={{
-                  '@media (min-width: 1440px)': {
-                    fontSize: '18px !important',
-                  },
-                  '@media (min-width: 1996px)': {
-                    fontSize: '34px !important',
-                  },
-                }}
-              >
-                {roomData.description}
-              </Typography>
+              {primaryViewComponent}
             </div>
             {/* The right grid, now including the monsterListStyle */}
             <Grid>
@@ -316,18 +333,13 @@ const acceptableMessageTypes = [
   'itemDetails',
   'fightSummary',
   'exits',
+  'view',
 ];
 export type SecondaryView = null | 'monsterDetails' | 'itemDetails' | 'fightSummary' | 'playerDetails';
+export type PrimaryView = 'room' | 'fight';
 
 // The RoomView component fetches the room data and handles sending commands
 export const RoomView = () => {
-  // // Fetch the room data
-  // const roomData = useRoomData();
-  // // Establish a WebSocket connection
-  // const { sendJsonMessage } = useWebSocket(getSocketURL(), {
-  //   share: true,
-  // });
-
   // this will share the main websocket connection with the parent component because we have share:true
   // the filter will help us to only get the messages that we want i.e. where type is `room` for this component
   const { lastJsonMessage, sendJsonMessage } = useWebSocket<ServerResponse>(getSocketURL(), {
@@ -349,11 +361,15 @@ export const RoomView = () => {
   const [exitsData, setExitsData] = useState<{ [direction: string]: string }>({});
   const [itemDetailsData, setItemDetailsData] = useState<ItemDetails | null>(null);
   const [fightSummaryData, setFightSummaryData] = useState<FightSummary | null>(null);
+  const [primaryView, setPrimaryView] = useState<PrimaryView>('room');
   const [secondaryView, setSecondaryView] = useState<SecondaryView>(null);
 
   useEffect(() => {
     if (lastJsonMessage !== null) {
-      if (lastJsonMessage.type === 'room') {
+      if (lastJsonMessage.type === 'view') {
+        const primaryView = lastJsonMessage.message as unknown as PrimaryView;
+        setPrimaryView(primaryView);
+      } else if (lastJsonMessage.type === 'room') {
         const data = lastJsonMessage as unknown as RoomType;
         setRoomData(data);
       } else if (lastJsonMessage.type === 'playersinroom') {
@@ -408,6 +424,7 @@ export const RoomView = () => {
       fightSummaryData={fightSummaryData}
       exitsData={exitsData}
       sendCommand={sendCommand}
+      primaryView={primaryView}
       secondaryView={secondaryView}
     />
   );
